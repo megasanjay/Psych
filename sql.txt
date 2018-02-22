@@ -1,0 +1,38 @@
+-- phpMyAdmin SQL Dump
+-- version 4.7.7
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:8889
+-- Generation Time: Feb 22, 2018 at 04:06 AM
+-- Server version: 5.6.38
+-- PHP Version: 7.2.1
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+--
+-- Database: `psych`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `LoginInfo`
+--
+
+CREATE TABLE `LoginInfo` (
+  `Username` varchar(30) NOT NULL,
+  `Password` varchar(10) NOT NULL,
+  `EmailAddress` varchar(30) NOT NULL,
+  `Admin` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `LoginInfo`
+--
+ALTER TABLE `LoginInfo`
+  ADD PRIMARY KEY (`Username`);
