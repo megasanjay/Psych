@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html lang = "en">
+
+<head>
+	<meta charset = "UTF-8" />
+	<title>Login!</title>
+	<link rel = "stylesheet" type = "text/css" href = "TestingHomepage.css">
+    <script type = "text/javascript" src = "TestingHomepage.js"></script>
+</head>
+
+<body onload = "checkPrivilege();">
+  <div class="mainContainer">
+		<div class = "buttonRowContainer">
+			<div class = "buttonContainer">
+				<button id = "financial" onclick="task(1)">Entering Financial Info</button>
+				<button id = "memos" onclick="task(2)">Editing Memos</button>
+				<button id = "crossCheck" onclick="task(3)">Cross-Checking Info</button>
+			</div>
+		</div>
+		<div class = "buttonRowContainer">
+			<div class = "buttonContainer">
+				<button id = "sorting" onclick="task(4)">Sorting/Filing</button>
+				<button id = "percentages" onclick="task(5)">Calculating Percentages</button>
+				<button id = "labeling" onclick="task(6)">Labeling Appointments</button>
+			</div>
+		</div>
+  </div>
+</body>
+</html>
