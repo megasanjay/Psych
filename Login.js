@@ -1,14 +1,13 @@
-
 function submit()
 {	
   let username = document.getElementById("usernameTextBox");
   let password = document.getElementById("passwordTextBox");
-	let emailAddress = document.getElementById("emailTextBox");
+  let emailAddress = document.getElementById("emailTextBox");
 
   // Calls the get password function if input fields are not empty
   if (username.value != '' && password.value != '')
   {
-      GetPassword(username.value.toLowerCase());
+      GetPassword(username.value.toLowerCase(), emailAddress);
       return;
   }
   // If input fields are empty, error message will appear
@@ -30,9 +29,9 @@ function submit()
 	}
 }
 
-function GetPassword(username)
+function GetPassword(username, emailAddress)
 {
-  var requestURL = "http://localhost:8888/loginValidation.php";
+  var requestURL = "http://localhost:8888/PsychPHP/loginValidation.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = alertContents_getPassword;
   httpRequest.open('POST', requestURL);

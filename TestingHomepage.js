@@ -1,85 +1,78 @@
-
 function checkPrivilege()
 {
-	user = sessionStorage.getItem("currentUser");
+  user = sessionStorage.getItem("currentUser");
 
   // Checks if user is logged in
-  if (user == undefined)           // If user is not logged in
-  {
-    //alert("Please log into your account.");
-    //window.open("Login.html", "_self", false);   // Goes back to the login page
-  }
+  if (user == undefined)
+  {
+    //alert("Please log into your account.");
+    //window.open("Login.html", "_self", false);   // Goes back to the login page
+  }
+  checkRestrictions();
+}
+
+function checkRestrictions()
+{
+  var requestURL = "http://localhost:8888/PsychPHP/Tester.php";
+  httpRequest = new XMLHttpRequest();
+  httpRequest.onreadystatechange = imposeRestrictions;
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  httpRequest.send('userName=' + encodeURIComponent(username));
 }
 
 function task(int taskNum)
 {
-	switch(taskNum)
-	{
-		case 1:
-			//do task 1
-			break;
-		case 2:
-			// do task 2
-			break;
-		case 3:
-			// do task 3
-			break;
-		case 4:
-			// do task 4
-			break;
-		case 5:
-			// do task 5
-			break;
-		case 6:
-			// do task 6
-			break;
-		default:
-			break;
-	}
+  switch(taskNum)
+  {
+    case 1:
+      //do task 1
+      break;
+    case 2:
+      // do task 2
+      break;
+    case 3:
+      // do task 3
+      break;
+    case 4:
+      // do task 4
+      break;
+    case 5:
+      // do task 5
+      break;
+    case 6:
+      // do task 6
+      break;
+    default:
+      break;
+  }
 }
 
-function submit()
-{	
-  let username = document.getElementById("usernameTextBox");
-  let password = document.getElementById("passwordTextBox");
-	let emailAddress = document.getElementById("emailTextBox");
-
-  // Calls the get password function if input fields are not empty
-  if (username.value != '' && password.value != '')
-  {
-      GetPassword(username.value.toLowerCase());
-      return;
-  }
-  // If input fields are empty, error message will appear
-  alert("Please fill all the fields in the page before clicking the 'Login' button.")
-  if (username.value == '')
-  {
-    username.classList.remove("regularTextbox");
-    username.classList.add("errorTextbox");
-  }
-  if (password.value == '')
-  {
-    password.classList.remove("regularTextbox");
-    password.classList.add("errorTextbox");
-  }
-	if (emailAddress.value = '')
-	{
-		emailAddress.classList.remove("regularTextBox");
-		emailAddress.classList.add("errorTextBox");
-	}
-}
-
-function GetPassword(username)
+function restrictControls(response)
 {
-  var requestURL = "http://localhost:8888/loginValidation.php";
-  httpRequest = new XMLHttpRequest();
-  httpRequest.onreadystatechange = alertContents_getPassword;
-  httpRequest.open('POST', requestURL);
-  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  httpRequest.send('userName=' + encodeURIComponent(username) + '&emailAddress=' + encodeURIComponent(emailAddress));
+  for(let i = 0; i < response.length; i++)
+  {
+    restriction = response[i];
+    limiter = restriction.Limiter;
+    limited = restriction.Limited;
+    
+    document.getElementById(limited).enabled = false;
+  }
 }
 
-function alertContents_getPassword()
+function resetAllButtons()
+{
+  temp = document.getElementsByClassName("taskButton");
+  
+  for(i = 0; i < temp.length; i++)
+  {
+    temp[i].enabled = true;
+    temp[i].classList.remove("restricted");
+    temp[i].classList.add("unrestricted");
+  }
+}
+
+function imposeRestrictions()
 {
   try
   {
@@ -88,54 +81,15 @@ function alertContents_getPassword()
       if (httpRequest.status === 200)
       {
         var response = httpRequest.responseText;
-
-        if (response == "Username does not exist")
+        
+        if (response == "None")
         {
-          document.getElementById("usernameTextBox").classList.remove("regularTextbox");
-          document.getElementById("usernameTextBox").classList.add("errorTextbox");
-          document.getElementById("passwordTextBox").classList.remove("regularTextbox");
-          document.getElementById("passwordTextBox").classList.add("errorTextbox");
-          alert("This username does not exist. Please check your login info before trying again.");
-          return;
+          resetAllButtons();
         }
-
-        response = JSON.parse(response);
-        responsePassword = response["password"];
-				responseEmailAddress = response["EmailAddress"];
-        responsePassword = responsePassword.split("\'").join("'");
-
-        // Checks if password is incorrect
-        if (document.getElementById("passwordTextBox").value != responsePassword)
+        else
         {
-          document.getElementById("passwordTextBox").classList.remove("regularTextbox");
-          document.getElementById("passwordTextBox").classList.add("errorTextbox");
-          alert("Incorrect Password. Please enter the correct password");
-          return;
-        }
-				
-				// Checks to see if the email is correct
-				if (document.getElementById("emailTextBox").value != responseEmailAddress)
-				{
-					document.getElementById("emailTextBox").classList.remove("regularTextbox");
-					document.getElementById("emailTextBox").classList.add("errorTextbox");
-					alert("Incorrect email address. Please enter the correct email address");
-				}
-				
-        // Validates the password is correct
-        if (document.getElementById("passwordTextBox").value == responsePassword && document.getElementById("emailTextBox").value == responseEmailAddress)
-        {
-          sessionStorage.setItem("currentUser", document.getElementById('usernameTextBox').value.toLowerCase());
-
-          if (response["admin"] == 1)
-          {
-            sessionStorage.setItem("admin", 1);
-						window.open("AdminPage.html", "_self", false);
-          }
-          else
-          {
-            sessionStorage.setItem("admin", 0);
-						window.open("TestingHomepage.html", "_self", false);
-          }
+          response = JSON.parse(response);
+          restrictControls(response);
         }
       }
       else
