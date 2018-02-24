@@ -21,12 +21,13 @@ function checkRestrictions()
   httpRequest.send('userName=' + encodeURIComponent(username));
 }
 
-function task(int taskNum)
+function task(taskNum)
 {
   switch(taskNum)
   {
     case 1:
-      //do task 1
+      //sessionStorage.setItem("variablename", variable value);
+      window.open("financialInfo.html", "_self", false);
       break;
     case 2:
       // do task 2

@@ -7,7 +7,7 @@ $dbname = 'psych';
 
 if (!empty($_POST))
 {
-  $userName = $_POST['userName'];
+  $userName = $_POST['username'];
 
   // Create connection
   $conn = new mysqli($servername, $username, $password, $dbname);
@@ -19,7 +19,7 @@ if (!empty($_POST))
   }
 
   // Prepare the sql statement
-  $stmt = $conn->prepare("SELECT * FROM LoginInfo WHERE username = ?");
+  $stmt = $conn->prepare("SELECT * FROM logininfo WHERE username = ?");
   if ($stmt==FALSE)
   {
   	echo "There is a problem with prepare <br>";

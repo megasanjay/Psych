@@ -36,7 +36,7 @@ function GetPassword(username, emailAddress)
   httpRequest.onreadystatechange = alertContents_getPassword;
   httpRequest.open('POST', requestURL);
   httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  httpRequest.send('userName=' + encodeURIComponent(username) + '&emailAddress=' + encodeURIComponent(emailAddress));
+  httpRequest.send('username=' + encodeURIComponent(username) + '&emailaddress=' + encodeURIComponent(emailAddress));
 }
 
 function alertContents_getPassword()
@@ -61,7 +61,7 @@ function alertContents_getPassword()
 
         response = JSON.parse(response);
         responsePassword = response["password"];
-				responseEmailAddress = response["EmailAddress"];
+				responseEmailAddress = response["emailaddress"];
         responsePassword = responsePassword.split("\'").join("'");
 
         // Checks if password is incorrect
@@ -78,6 +78,7 @@ function alertContents_getPassword()
 				{
 					document.getElementById("emailTextBox").classList.remove("regularTextbox");
 					document.getElementById("emailTextBox").classList.add("errorTextbox");
+					alert(responseEmailAddress);
 					alert("Incorrect email address. Please enter the correct email address");
 				}
 				
