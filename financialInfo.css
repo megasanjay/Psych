@@ -160,3 +160,10 @@ h2 {
   font-size: 16px;
   background-color: darkcyan;
 }
+/* Alternates the row colors */
+table.htCore tbody tr:nth-child(even) td {
+background-color: #B0E0E6;
+}
+.topText{
+  font-size: 35px;
+}
