@@ -12,28 +12,28 @@ function checkPrivilege() {
     //window.open("Login.html", "_self", false);   // Goes back to the login page
   }
 
-  loadMemo();
+  loadData();
 }
 
-function loadMemo() {
-  position = sessionStorage.getItem("lastMemoViewed");
-  goalState = sessionStorage.getItem("memoGoal");
+function loadData() {
+  position = sessionStorage.getItem("lastApptViewed");
+  goalState = sessionStorage.getItem("labelApptGoal");
 
   if (position == undefined) {
     position = 0;
-    sessionStorage.setItem("lastMemoViewed", position);
+    sessionStorage.setItem("lastApptViewed", position);
   }
 
   if (position > goalState) {
     alert("goal complete");
-    sessionStorage.removeItem("lastMemoViewed");
+    sessionStorage.removeItem("lastApptViewed");
     window.open("TestingHomepage.html", "_self", false);
   }
 
-  requestMemo(position);
+  requestData(position);
 }
 
-function requestMemo(position) {
+function requestData(position) {
   var requestURL = "http://localhost:8888/PsychPHP/editMemo.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = displayMemo;

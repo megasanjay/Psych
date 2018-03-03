@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Entering Financial Information</title>
+  <link rel="stylesheet" type="text/css" href="editMemo.html">
+  <script type="text/javascript" src="editMemo.js"></script>
+</head>
+
+<body onload="checkPrivilege()">
+  <h1>
+    <span>
+      Label Appointments
+    </span>
+  </h1>
+
+  <br>
+
+  <form>
+    <fieldset>
+      Patient ID: <input type="label" placeholder="Patient Identification Number">
+      <br> First Name: <input type="label" placeholder="First Name">
+      <br> Last Name: <input type="label " placeholder="Last Name">
+      <br> Age: <input type="label" placeholder="Age">
+      <br> Appointment Type: <select>
+        <option value="hairCut">
+          Hair Cut
+        </option>
+        <option value = "hairColor">
+          Hair Color
+        </option>
+        <option value = "hairStraighten">
+          Hair Straightened
+        </option>
+      </select>
+      <br>
+      <button>Previous</button>
+      <button>Submit</button>
+      <button>Next</button>
+    </fieldset>
+  </form>
+</body>
+
+</html>

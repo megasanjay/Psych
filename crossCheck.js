@@ -37,7 +37,7 @@ function reportState() {
 }
 
 function sendToServer(infoArray) {
-  var requestURL = "http://localhost:8888/PsychPHP/financialInfo.php";
+  var requestURL = "http://localhost:8888/PsychPHP/crossCheck.php";
   httpRequest = new XMLHttpRequest();
   //httpRequest.onreadystatechange = imposeRestrictions;
   httpRequest.open('POST', requestURL);
@@ -48,7 +48,7 @@ function sendToServer(infoArray) {
 function checkForCompletion() {
   // rework code for row count
   let dataCount = 0;
-  let goal = sessionStorage.getItem("financialGoal");
+  let goal = sessionStorage.getItem("crossCheckGoal");
   for (let i = 0; i < rowCount; i++) {
     for (let j = 0; j < colCount; j++) {
       if (hot.getDataAtCell(i, j) != null) {

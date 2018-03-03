@@ -22,16 +22,18 @@ function task(taskNum) {
   switch (taskNum) {
     case 1:
       //sessionStorage.setItem("variablename", variable value);
+      sessionStorage.setItem("financialGoal", 50);
       window.open("financialInfo.html", "_self", false);
       break;
     case 2:
       // do task 2
-      sessionStorage.setItem("lastMemoViewed", 0);
-      sessionStorage.setItem("goal", 2);
+      //sessionStorage.setItem("lastMemoViewed", 0);
+      sessionStorage.setItem("memoGoal", 2);
       window.open("editMemo.html", "_self", false);
       break;
     case 3:
-      // do task 3
+      sessionStorage.setItem("crossCheckGoal", 50);
+      window.open("crossCheck.html", "_self", false);
       break;
     case 4:
       // do task 4
@@ -41,6 +43,8 @@ function task(taskNum) {
       break;
     case 6:
       // do task 6
+      sessionStorage.setItem("labelApptGoal", 10);
+      window.open("labelAppointment.html", "_self", false);
       break;
     default:
       break;
