@@ -5,8 +5,8 @@
 <head>
   <meta charset="UTF-8" />
   <title>Entering Financial Information</title>
-  <link rel="stylesheet" type="text/css" href="editMemo.html">
-  <script type="text/javascript" src="editMemo.js"></script>
+  <link rel="stylesheet" type="text/css" href="labelAppointment.css">
+  <script type="text/javascript" src="labelAppointment.js"></script>
 </head>
 
 <body onload="checkPrivilege()">
@@ -20,11 +20,14 @@
 
   <form>
     <fieldset>
-      Patient ID: <input type="label" placeholder="Patient Identification Number">
-      <br> First Name: <input type="label" placeholder="First Name">
-      <br> Last Name: <input type="label " placeholder="Last Name">
-      <br> Age: <input type="label" placeholder="Age">
-      <br> Appointment Type: <select>
+      Patient ID: <input type="label" placeholder="Patient Identification Number" readonly id="idLabel">
+      <br> First Name: <input type="label" placeholder="First Name" readonly id="firstNameLabel">
+      <br> Last Name: <input type="label " placeholder="Last Name" readonly id="lastNameLabel">
+      <br> Age: <input type="label" readonly placeholder="Age" id="ageLabel">
+      <br> Appointment Type: <select id="labelValue">
+        <option disabled selected value="ns"> 
+          -- select an option -- 
+        </option>
         <option value="hairCut">
           Hair Cut
         </option>
@@ -36,9 +39,9 @@
         </option>
       </select>
       <br>
-      <button>Previous</button>
-      <button>Submit</button>
-      <button>Next</button>
+      <button onclick="moveAppointment('prev')">Previous</button>
+      <button onclick="submitData()">Submit</button>
+      <button onclick="moveAppointment('next')">Next</button>
     </fieldset>
   </form>
 </body>

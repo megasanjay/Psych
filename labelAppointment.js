@@ -1,6 +1,3 @@
-var hot;
-var rowCount = 9;
-var colCount = 5;
 var user;
 
 function checkPrivilege() {
@@ -34,36 +31,94 @@ function loadData() {
 }
 
 function requestData(position) {
-  var requestURL = "http://localhost:8888/PsychPHP/editMemo.php";
+  var requestURL = "http://localhost:8888/PsychPHP/labelAppointment.php";
   httpRequest = new XMLHttpRequest();
-  httpRequest.onreadystatechange = displayMemo;
+  httpRequest.onreadystatechange = displayData;
   httpRequest.open('POST', requestURL);
   httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   httpRequest.send('action=' + encodeURIComponent('request') + '&position=' + encodeURIComponent(position));
 }
 
-function submitMemo() {
-  position = sessionStorage.getItem("lastMemoViewed");
-  content = document.getElementById("editTextBox").value;
-  sendMemo(position, content);
+function submitData() {
+  position = sessionStorage.getItem("lastApptViewed");
+  content = document.getElementById("labelValue").value;
+
+  if (content == 'ns') {
+    alert("Please select an option for the appointment");
+    return;
+  }
+
+  temp = new Object();
+  temp.position = position;
+  temp.username = user;
+  temp.selected = parseInt(content);
+  sendData(temp);
 }
 
-function sendMemo(position, content) {
-  var requestURL = "http://localhost:8888/PsychPHP/editMemo.php";
+function sendData(temp) {
+  var requestURL = "http://localhost:8888/PsychPHP/labelAppointment.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = confirmSave;
   httpRequest.open('POST', requestURL);
   httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  httpRequest.send('action=' + encodeURIComponent('submit') + '&username=' + encodeURIComponent(user) + '&position=' + encodeURIComponent(position) + '&memo=' + encodeURIComponent(content));
+  httpRequest.send('action=' + encodeURIComponent('submit') + '&content=' + JSON.stringify(temp));
 }
 
-function displayMemo() {
+function moveAppointment(direction) {
+  position = sessionStorage.getItem("lastApptViewed");
+  var requestURL = "http://localhost:8888/PsychPHP/labelAppointment.php";
+  httpRequest = new XMLHttpRequest();
+  httpRequest.onreadystatechange = confirmMove;
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  if (direction == 'prev') {
+    position--;
+    httpRequest.send('action=' + encodeURIComponent('move') + '&position=' + encodeURIComponent(position));
+  } else {
+    position++;
+    httpRequest.send('action=' + encodeURIComponent('move') + '&position=' + encodeURIComponent(position));
+  }
+}
+
+function displayData() {
   try {
     if (httpRequest.readyState === XMLHttpRequest.DONE) {
       if (httpRequest.status === 200) {
         var response = httpRequest.responseText;
 
-        document.getElementById("editTextBox").value = response;
+        if ($response == "No Data") {
+          alert("End of data");
+          sessionStorage.removeItem("lastApptViewed");
+          window.open("TestingHomepage.html", "_self", false);
+        }
+
+        response = JSON.parse(response);
+        document.getElementById("idLabel").value = response.id;
+        document.getElementById("firstNameLabel").value = response.firstname;
+        document.getElementById("lastNameLabel").value = response.lastname;
+        document.getElementById("ageLabel").value = response.age;
+      } else {
+        alert('There was a problem with the request.');
+      }
+    }
+    return 1;
+  } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
+  {
+    alert('Caught Exception: ' + e.description);
+  }
+}
+
+function confirmMove() {
+  try {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+      if (httpRequest.status === 200) {
+        var response = httpRequest.responseText;
+        if (response == 'Rejected') {
+          alert("Selection out of bounds");
+          return;
+        } else {
+          requestData(position);
+        }
       } else {
         alert('There was a problem with the request.');
       }
@@ -81,15 +136,15 @@ function confirmSave() {
       if (httpRequest.status === 200) {
         var response = httpRequest.responseText;
         if (response == 'Success') {
-          alert("Memo edits saved");
-          position = sessionStorage.getItem("lastMemoViewed");
-          sessionStorage.setItem("lastMemoViewed", parseInt(position) + 1);
-          loadMemo();
+          alert("Appointment saved");
+          position = sessionStorage.getItem("lastApptViewed");
+          sessionStorage.setItem("lastApptViewed", parseInt(position) + 1);
+          loadData();
         } else {
           alert("Something went wrong. Please try again in a few seconds");
         }
       } else {
-        alert('There was a problem with the request.');
+        alert('There was a problem with the save.');
       }
     }
     return 1;

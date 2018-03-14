@@ -44,6 +44,7 @@ function task(taskNum) {
     case 6:
       // do task 6
       sessionStorage.setItem("labelApptGoal", 10);
+      sessionStorage.setItem("lastApptViewed", 0);
       window.open("labelAppointment.html", "_self", false);
       break;
     default:
