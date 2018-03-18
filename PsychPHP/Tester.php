@@ -7,7 +7,7 @@ $dbname = 'psych';
 
 if (!empty($_POST))
 {
-  $userName = $_POST['username'];
+  $userName = $_POST['userName'];
   $action = $_POST['action'];
   
   // Create connection
@@ -43,10 +43,11 @@ if (!empty($_POST))
       }
       $stmt->bind_param("is", $task, $userName);
       $stmt->execute();               // Run query
+      return;
     }
     else
     {
-      $stmt = $conn->prepare("INSERT INTO currenttask (username, task) VALUES (?,?)");
+      $stmt = $conn->prepare("INSERT INTO currenttask (username, tasknum) VALUES (?,?)");
       if ($stmt==FALSE)
       {
         echo "There is a problem with prepare <br>";

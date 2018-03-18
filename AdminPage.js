@@ -77,11 +77,13 @@ function viewLiveFeed(username, tasknum) {
     currentInterval = setInterval(loadFinancialInfoTable, 3000, username);
   }
   if (tasknum == 2) {
+    document.getElementById("mainContainer").innerHTML = "<textarea id = 'memoTextArea'></textarea></div>";
     loadMemo(username);
     currentInterval = setInterval(loadMemo, 5000, username);
     // Show finanical info table
   }
   if (tasknum == 3) {
+    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
     loadCrossCheckInfoTable(username);
     currentInterval = setInterval(loadCrossCheckInfoTable, 3000, username);
     // Show finanical info table
@@ -93,6 +95,7 @@ function viewLiveFeed(username, tasknum) {
     // Show finanical info table
   }
   if (tasknum == 6) {
+    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
     loadLabelingApointments(username);
     currentInterval = setInterval(loadLabelingApointments, 3000, username);
     // Show finanical info table

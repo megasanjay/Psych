@@ -7,53 +7,139 @@ $dbname = 'psych';
 
 if (!empty($_POST))
 {
-  $userName = $_POST['username'];
+  $userName = $_POST['userName'];
   $action = $_POST['action'];
   
   // Create connection
   $conn = new mysqli($servername, $username, $password, $dbname);
-
+  $conn2 = mysqli_connect($servername, $username, $password, $dbname);
   // Check connection
   if ($conn->connect_error)
   {
     die("Connection failed: " . $conn->connect_error ."<br>");
   }
   
-  if ($action == 'setCurrentState')
+  if ($action == 'requestParticipants')
   {
-    $task = $_POST['task'];
-    $stmt = $conn->prepare("SELECT * FROM currenttask WHERE username = ?");
-    if ($stmt==FALSE)
-    {
-      echo "There is a problem with prepare <br>";
-      echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
-    }
-    $stmt->bind_param("s", $userName);
-    
-    $stmt->execute();               // Run query
-    $result = $stmt->get_result();  // query result
+    $sql = "SELECT * FROM currenttask ORDER BY username ASC";        
+    $result = mysqli_query($conn,$sql);
 
-    if ($result->num_rows != 0)     // Results returned
+    $rows = array();
+    
+    while($row = mysqli_fetch_assoc($result))
     {
-      $stmt = $conn->prepare("UPDATE currenttask SET tasknum = ? WHERE username = ?");
-      if ($stmt==FALSE)
-      {
-        echo "There is a problem with prepare <br>";
-        echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
-      }
-      $stmt->bind_param("is", $task, $userName);
-      $stmt->execute();               // Run query
+      $rows[] = array("username"=>$row["username"],"tasknum"=>$row["tasknum"]); // Put the data into an associative array
+    }
+    
+    if ($result->num_rows != 0)          // Results returned increment comment ID value for new comment
+    {
+      echo json_encode($rows);    // Json encode the data to send back
+      $conn->close();
+      return;
     }
     else
     {
-      $stmt = $conn->prepare("INSERT INTO currenttask (username, task) VALUES (?,?)");
-      if ($stmt==FALSE)
-      {
-        echo "There is a problem with prepare <br>";
-        echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
-      }
-      $stmt->bind_param("si", $userName, $task);
-      $stmt->execute();   
+      echo "empty";
+      return;
+    }
+  }
+  
+  if ($action == 'financial')
+  {
+    $sql = "SELECT * FROM financialinfo WHERE username = '{$userName}' ORDER BY recordnum ASC";        
+    $result = mysqli_query($conn2,$sql);
+
+    $rows = array();
+    
+    while($row = mysqli_fetch_assoc($result))
+    {
+      $rows[] = array($row["data1"],$row["data2"]); // Put the data into an associative array
+    }
+    
+    if (count($rows) > 0)          // Results returned increment comment ID value for new comment
+    {
+      echo json_encode($rows);    // Json encode the data to send back
+      $conn->close();
+      return;
+    }
+    else
+    {
+      echo "[]";
+      return;
+    }
+  }
+  
+  if ($action == 'crossCheck')
+  {
+    $sql = "SELECT * FROM crosscheck WHERE username = '{$userName}' ORDER BY recordnum ASC";        
+    $result = mysqli_query($conn2,$sql);
+
+    $rows = array();
+    
+    while($row = mysqli_fetch_assoc($result))
+    {
+      $rows[] = array($row["data1"],$row["data2"]); // Put the data into an associative array
+    }
+    
+    if (count($rows) > 0)          // Results returned increment comment ID value for new comment
+    {
+      echo json_encode($rows);    // Json encode the data to send back
+      $conn->close();
+      return;
+    }
+    else
+    {
+      echo "[]";
+      return;
+    }
+  }
+  
+  if ($action == 'memo')
+  {
+    $sql = "SELECT * FROM memoinput WHERE username = '{$userName}' ORDER BY id DESC LIMIT 1";        
+    $result = mysqli_query($conn2,$sql);
+
+    $rows = array();
+    
+    while($row = mysqli_fetch_assoc($result))
+    {
+      $rows[] = array($row["data1"],$row["data2"]); // Put the data into an associative array
+    }
+    
+    if (count($rows) > 0)          // Results returned increment comment ID value for new comment
+    {
+      echo json_encode($rows);    // Json encode the data to send back
+      $conn->close();
+      return;
+    }
+    else
+    {
+      echo "[]";
+      return;
+    }
+  }
+  
+  if ($action == 'labelAppointment')
+  {
+    $sql = "SELECT labelappointmentinfo.firstname AS firstname, labelappointmentinfo.lastname AS lastname, labelappointmentinfo.age AS age, labelappointmentinput.selected AS selected FROM labelappointmentinput, labelappointmentinfo WHERE labelappointmentinput.username = '{$userName}' AND labelappointmentinput.position = labelappointmentinfo.id ";        
+    $result = mysqli_query($conn2,$sql);
+
+    $rows = array();
+    
+    while($row = mysqli_fetch_assoc($result))
+    {
+      $rows[] = array($row["firstname"],$row["lastname"], $row["age"], $row["selected"]); // Put the data into an associative array
+    }
+    
+    if (count($rows) > 0)          // Results returned increment comment ID value for new comment
+    {
+      echo json_encode($rows);    // Json encode the data to send back
+      $conn->close();
+      return;
+    }
+    else
+    {
+      echo "[]";
       return;
     }
   }
