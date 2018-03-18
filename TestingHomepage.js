@@ -1,3 +1,5 @@
+var user;
+
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
 
@@ -15,10 +17,21 @@ function checkRestrictions() {
   httpRequest.onreadystatechange = imposeRestrictions;
   httpRequest.open('POST', requestURL);
   httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  httpRequest.send('userName=' + encodeURIComponent(username));
+  httpRequest.send('userName=' + encodeURIComponent(user) + "&action=" + encodeURIComponent("request"));
+}
+
+function setCurrentState(taskNum) {
+  var requestURL = "http://localhost:8888/PsychPHP/Tester.php";
+  httpRequest = new XMLHttpRequest()
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  httpRequest.send('userName=' + encodeURIComponent(user) + "&action=" + encodeURIComponent("setCurrentState") + "&task=" + encodeURIComponent(taskNum));
 }
 
 function task(taskNum) {
+
+  setCurrentState(taskNum);
+
   switch (taskNum) {
     case 1:
       //sessionStorage.setItem("variablename", variable value);

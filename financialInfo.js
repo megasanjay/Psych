@@ -16,14 +16,24 @@ function checkPrivilege() {
   setInterval(checkForCompletion, 5000);
 }
 
+var sdf = 0;
+
 function test() {
-  alert(hot.getDataAtCell(3, 0));
+  btn = document.createElement("button");
+  btn.innerHTML = sdf;
+  //btn.onclick = test2(sdf);
+  sdf++;
+  document.getElementById("mainContainer").appendChild(btn);
+}
+
+function test2(x) {
+  alert(x);
 }
 
 function reportState() {
   //alert("running");
   infoArray = [];
-  for (let i = 0; i < rowCount; i++) {
+  for (let i = 0; i < hot.countRows(); i++) {
     temp = new Object();
     temp.recordNum = i;
     temp.recordData = hot.getDataAtCell(i, 0);
@@ -78,6 +88,7 @@ function loadGrid() {
     columnSorting: true,
     colHeaders: ['col1', 'col2', 'col3', 'col4', 'col5'],
     contextMenu: true,
+    minSpareRows: 2,
     //hiddenColumns: {
     //columns: [4],
     //indicators: false

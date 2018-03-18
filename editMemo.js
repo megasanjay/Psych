@@ -12,6 +12,7 @@ function checkPrivilege() {
     //window.open("Login.html", "_self", false);   // Goes back to the login page
   }
 
+  setInterval(submitChanges, 5000);
   loadMemo();
 }
 
@@ -46,6 +47,16 @@ function submitMemo() {
   position = sessionStorage.getItem("lastMemoViewed");
   content = document.getElementById("editTextBox").value;
   sendMemo(position, content);
+}
+
+function submitChanges() {
+  position = sessionStorage.getItem("lastMemoViewed");
+  content = document.getElementById("editTextBox").value;
+  var requestURL = "http://localhost:8888/PsychPHP/editMemo.php";
+  httpRequest = new XMLHttpRequest();
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  httpRequest.send('action=' + encodeURIComponent('submit') + '&username=' + encodeURIComponent(user) + '&position=' + encodeURIComponent(position) + '&memo=' + encodeURIComponent(content));
 }
 
 function sendMemo(position, content) {

@@ -1,8 +1,8 @@
 <?php
 
 $servername = 'localhost'; // default server name
-$username = 'psychlogin'; // user name that you created
-$password = 'YLUCndOFS3qIKwtS'; // password that you created
+$username = 'psychUser'; // user name that you created
+$password = 'N20t54TjPQKEmVhl'; // password that you created
 $dbname = 'psych';
 
 if (!empty($_POST))

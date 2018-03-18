@@ -5,20 +5,24 @@
 <head>
   <meta charset="UTF-8" />
   <title>Entering Financial Information</title>
-  <link rel="stylesheet" type="text/css" href="financialInfo.css">
-  <link rel="stylesheet" type="text/css" href="https://docs.handsontable.com/pro/bower_components/handsontable-pro/dist/handsontable.full.min.css">
+  <link rel="stylesheet" type="text/css" href="AdminPage.css">
   <script src="https://docs.handsontable.com/pro/bower_components/handsontable-pro/dist/handsontable.full.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://docs.handsontable.com/pro/bower_components/handsontable-pro/dist/handsontable.full.min.css">
   <link rel="stylesheet" type="text/css" href="https://handsontable.com/static/css/main.css">
-  <script type="text/javascript" src="financialInfo.js"></script>
+  <script type="text/javascript" src="AdminPage.js"></script>
 </head>
 
 <body onload="checkPrivilege()">
   <div class="topContainer">
     <h1>
-      Entering Financial Information
+      Admin Homepage
     </h1>
   </div>
-  <div class="mainContainer">
+  <div id="participantsContainer">
+    <ul id="participantsList"></ul>
+  </div>
+  <div id="participantFeed"></div>
+  <div id="mainContainer">
     <div id="gridContainer">
       <div class="hideBottomText" </div>
       </div>
