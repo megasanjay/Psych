@@ -89,6 +89,9 @@ function viewLiveFeed(username, tasknum) {
     // Show finanical info table
   }
   if (tasknum == 4) {
+    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+    loadSortedFiles(username);
+    currentInterval = setInterval(loadSortedFiles, 3000, username);
     // Show finanical info table
   }
   if (tasknum == 5) {
@@ -117,6 +120,16 @@ function loadFinancialInfoTable(username) {
   httpRequest.open('POST', requestURL);
   httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   httpRequest.send('userName=' + encodeURIComponent(username) + '&action=' + encodeURIComponent('financial'));
+}
+
+function loadSortedFiles(username) {
+  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+  var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
+  httpRequest = new XMLHttpRequest();
+  httpRequest.onreadystatechange = loadTable;
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  httpRequest.send('userName=' + encodeURIComponent(username) + '&action=' + encodeURIComponent('files'));
 }
 
 function loadMemo(username) {

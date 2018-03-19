@@ -51,7 +51,7 @@ function submitData() {
   temp = new Object();
   temp.position = position;
   temp.username = user;
-  temp.selected = parseInt(content);
+  temp.selected = content;
   sendData(temp);
 }
 
