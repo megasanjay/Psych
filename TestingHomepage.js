@@ -50,9 +50,13 @@ function task(taskNum) {
       break;
     case 4:
       // do task 4
+      sessionStorage.setItem("sortFilesGoal", 50);
+      window.open("sortFiles.html", "_self", false);
       break;
     case 5:
       // do task 5
+      sessionStorage.setItem("percentageGoal", 50);
+      window.open("calculatePercentages.html", "_self", false);
       break;
     case 6:
       // do task 6

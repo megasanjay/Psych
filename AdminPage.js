@@ -92,6 +92,9 @@ function viewLiveFeed(username, tasknum) {
     // Show finanical info table
   }
   if (tasknum == 5) {
+    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+    loadPercentages(username);
+    currentInterval = setInterval(loadPercentages, 3000, username);
     // Show finanical info table
   }
   if (tasknum == 6) {
@@ -167,13 +170,21 @@ function loadCrossCheckInfoTable(username) {
   httpRequest.send('userName=' + encodeURIComponent(username) + '&action=' + encodeURIComponent('crossCheck'));
 }
 
+function loadPercentages(username) {
+  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+  var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
+  httpRequest = new XMLHttpRequest();
+  httpRequest.onreadystatechange = loadTable;
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  httpRequest.send('userName=' + encodeURIComponent(username) + '&action=' + encodeURIComponent('percentage'));
+}
+
 function loadTable() {
   try {
     if (httpRequest.readyState === XMLHttpRequest.DONE) {
       if (httpRequest.status === 200) {
         var response = httpRequest.responseText;
-        //alert(response);
-        //if response
         response = JSON.parse(response);
         loadGrid(response);
       } else {
