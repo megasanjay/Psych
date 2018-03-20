@@ -51,7 +51,7 @@ function submitData() {
 
   if (content == 'ns') {
     alert("Please select an option for the appointment");
-    return;
+    return false;
   }
 
   temp = new Object();
@@ -59,6 +59,7 @@ function submitData() {
   temp.filename = fileName;
   temp.selected = content;
   sendData(temp);
+  return true;
 }
 
 function sendData(temp) {
