@@ -1,20 +1,18 @@
-html
-{
+html {
   width: 100%;
   height: 100%;
 }
 
-body
-{
+body {
   width: 99%;
   height: 98%;
-  background: rgb(245, 245, 245);
-  background: -webkit-linear-gradient(right, #8e9eab, #eef2f3);
+  background: rgba(255, 255, 255, 1);
+  background: -moz-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(246, 246, 246, 1) 94%, rgba(237, 237, 237, 1) 100%);
+  background: -webkit-gradient(left top, right top, color-stop(0%, rgba(255, 255, 255, 1)), color-stop(94%, rgba(246, 246, 246, 1)), color-stop(100%, rgba(237, 237, 237, 1)));
   background-size: contain;
 }
 
-.mainContainer
-{
+.mainContainer {
   left: 0;
   position: absolute;
   text-align: center;
@@ -25,8 +23,28 @@ body
   border: none;
 }
 
-.submitButton
-{
+#editTextBox {
+  font-family: 'Lato', sans-serif;
+  width: 70%;
+  font-size: 1em;
+  background-color: transparent;
+  padding: 10px 10px 10px 10px;
+  margin-bottom: 1em;
+  border-radius: 15px;
+}
+
+.topContainer {
+  display: block;
+  color: white;
+  background-color: lightseagreen;
+  height: 80px;
+  width: auto;
+  padding: 10px 20px 10px 20px;
+  margin-bottom: 1em;
+  font-family: 'Roboto', sans-serif;
+}
+
+.submitButton {
   position: relative;
   cursor: pointer;
   border: none;
@@ -39,56 +57,27 @@ body
   padding: 10px 100px;
   -webkit-font-smoothing: subpixel-antialiased;
   -webkit-transition: border 0.25s linear, color 0.25s linear, background-color 0.25s linear;
-          transition: border 0.25s linear, color 0.25s linear, background-color 0.25s linear;
+  transition: border 0.25s linear, color 0.25s linear, background-color 0.25s linear;
   color: #ffffff;
   background-color: #1ABC9C;
   white-space: normal;
 }
 
-.createButton
-{
-  position: relative;
-  cursor: pointer;
-  border: none;
-  font-family: "Lato", Helvetica, Arial, sans-serif;
-  font-size: 1.5em;
-  font-weight: lighter;
-  border-radius: 8px;
-  border-width: 8px 6px 0;
-  border-bottom-width: 0;
-  padding: 10px 100px;
-  -webkit-font-smoothing: subpixel-antialiased;
-  -webkit-transition: border 0.25s linear, color 0.25s linear, background-color 0.25s linear;
-          transition: border 0.25s linear, color 0.25s linear, background-color 0.25s linear;
-  color: #ffffff;
-  background-color: #3498DB;
-  white-space: normal;
-}
-
-.submitButton:hover, .submitButton:focus
-{
+.submitButton:hover,
+.submitButton:focus {
   color: #ffffff;
   background-color: #16A085;
   border-color: #48c9b0
 }
 
-.createButton:hover, .createButton:focus
-{
-  color: #ffffff;
-  background-color: #2980B9;
-  border-color: #48c9b0
-}
-
-.submitButton span, .createButton span
-{
+.submitButton span {
   cursor: pointer;
   display: inline-block;
   position: relative;
   transition: 0.5s;
 }
 
-.submitButton span:after, .createButton span:after
-{
+.submitButton span:after {
   content: '  \00bb';
   position: absolute;
   opacity: 0;
@@ -97,36 +86,15 @@ body
   transition: 0.5s;
 }
 
-.submitButton:hover span, .createButton:hover span
-{
+.submitButton:hover span {
   padding-right: 25px;
 }
 
-.submitButton:hover span:after, .createButton:hover span:after {
+.submitButton:hover span:after {
   opacity: 1;
   right: 0;
 }
 
-span
-{
-  font-weight: bold;
-}
-
-a {
-  color: #34A9DC;
-  text-decoration: none;
-}
-
-p {
-  margin: 5px 0 20px;
-}
-
-h2 {
-  margin: 20px 0 0;
-  font-size: 18px;
-  font-weight: normal;
-}
-*:focus
-{
-    //outline: none;
+*:focus {
+  outline: none;
 }

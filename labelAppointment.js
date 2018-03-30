@@ -86,10 +86,11 @@ function displayData() {
       if (httpRequest.status === 200) {
         var response = httpRequest.responseText;
 
-        if ($response == "No Data") {
+        if (response == "No Data") {
           alert("End of data");
           sessionStorage.removeItem("lastApptViewed");
           window.open("TestingHomepage.html", "_self", false);
+          return;
         }
 
         response = JSON.parse(response);

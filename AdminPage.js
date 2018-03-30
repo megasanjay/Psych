@@ -1,6 +1,5 @@
 var hot;
-var rowCount = 15;
-var colCount = 5;
+var lastScrollPosition = 0;
 var currentInterval;
 
 function checkPrivilege() {
@@ -70,9 +69,10 @@ function insertParticipant(username, tasknum) {
 function viewLiveFeed(username, tasknum) {
 
   currentInterval = clearInterval(currentInterval);
+  lastScrollPosition = document.getElementById("gridContainer").scrollTop;
 
   if (tasknum == 1) {
-    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' onscroll='pes()'></div>";
     loadFinancialInfoTable(username);
     currentInterval = setInterval(loadFinancialInfoTable, 3000, username);
   }
@@ -83,37 +83,34 @@ function viewLiveFeed(username, tasknum) {
     // Show finanical info table
   }
   if (tasknum == 3) {
-    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' onscroll='pes()'></div>";
     loadCrossCheckInfoTable(username);
     currentInterval = setInterval(loadCrossCheckInfoTable, 3000, username);
     // Show finanical info table
   }
   if (tasknum == 4) {
-    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' onscroll='pes'></div>";
     loadSortedFiles(username);
     currentInterval = setInterval(loadSortedFiles, 3000, username);
     // Show finanical info table
   }
   if (tasknum == 5) {
-    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' onscroll='pes()'></div>";
     loadPercentages(username);
     currentInterval = setInterval(loadPercentages, 3000, username);
     // Show finanical info table
   }
   if (tasknum == 6) {
-    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' onscroll='pes()'></div>";
     loadLabelingApointments(username);
     currentInterval = setInterval(loadLabelingApointments, 3000, username);
     // Show finanical info table
   }
 }
 
-function test() {
-  alert(hot.getDataAtCell(3, 0));
-}
-
 function loadFinancialInfoTable(username) {
-  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+  lastScrollPosition = document.getElementById("gridContainer").scrollTop;
+  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' onscroll='pes()'></div>";
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -123,7 +120,8 @@ function loadFinancialInfoTable(username) {
 }
 
 function loadSortedFiles(username) {
-  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+  lastScrollPosition = document.getElementById("gridContainer").scrollTop;
+  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' onscroll='pes'></div>";
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -147,9 +145,6 @@ function loadMemoText() {
     if (httpRequest.readyState === XMLHttpRequest.DONE) {
       if (httpRequest.status === 200) {
         var response = httpRequest.responseText;
-        //alert(response);
-        //if response
-        //response = JSON.parse(response);
         document.getElementById("memoTextArea").innerHTML = response;
       } else {
         alert('There was a problem with request.');
@@ -164,7 +159,8 @@ function loadMemoText() {
 
 
 function loadLabelingApointments(username) {
-  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+  lastScrollPosition = document.getElementById("gridContainer").scrollTop;
+  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' onscroll='pes()'></div>";
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -174,7 +170,8 @@ function loadLabelingApointments(username) {
 }
 
 function loadCrossCheckInfoTable(username) {
-  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+  lastScrollPosition = document.getElementById("gridContainer").scrollTop;
+  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' onscroll='pes()'></div>";
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -184,13 +181,18 @@ function loadCrossCheckInfoTable(username) {
 }
 
 function loadPercentages(username) {
-  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+  lastScrollPosition = document.getElementById("gridContainer").scrollTop;
+  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' onscroll='pes()'></div>";
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
   httpRequest.open('POST', requestURL);
   httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   httpRequest.send('userName=' + encodeURIComponent(username) + '&action=' + encodeURIComponent('percentage'));
+}
+
+function pes() {
+  document.getElementById("participantFeed").innerHTML = document.getElementById("gridContainer").scrollTop;
 }
 
 function loadTable() {
@@ -200,6 +202,7 @@ function loadTable() {
         var response = httpRequest.responseText;
         response = JSON.parse(response);
         loadGrid(response);
+        document.getElementById("gridContainer").scrollTop = lastScrollPosition;
       } else {
         alert('There was a problem with request.');
       }
@@ -212,10 +215,6 @@ function loadTable() {
 }
 
 function loadGrid(response) {
-  //var data = function () {
-  //return Handsontable.helper.createSpreadsheetData(8, //5);
-  //};
-
   var data = response;
 
   var container = document.getElementById('gridContainer');
@@ -227,13 +226,8 @@ function loadGrid(response) {
     minRows: 0,
     minSpareRows: 2,
     columnSorting: true,
-    //colHeaders: ['col1', 'col2', 'col3', 'col4', 'col5'],
     readOnly: true,
     contextMenu: true,
-    //hiddenColumns: {
-    //columns: [4],
-    //indicators: false
-    //},
     fillHandle: {
       autoInsertRow: false,
     }

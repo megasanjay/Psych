@@ -46,14 +46,40 @@ if (!empty($_POST))
   
   if ($action == 'financial')
   {
-    $sql = "SELECT * FROM financialinfo WHERE username = '{$userName}' ORDER BY recordnum ASC";        
+    $sql = "SELECT * FROM financialinfo WHERE username = '{$userName}' ORDER BY recordnum DESC";        
     $result = mysqli_query($conn2,$sql);
 
     $rows = array();
     
     while($row = mysqli_fetch_assoc($result))
     {
-      $rows[] = array($row["data1"],$row["data2"]); // Put the data into an associative array
+      $rows[] = array($row["recorddate"],$row["checknumber"], $row["amount"]); // Put the data into an associative array
+    }
+    
+    if (count($rows) > 0)          // Results returned increment comment ID value for new comment
+    {
+      echo json_encode($rows);    // Json encode the data to send back
+      $conn->close();
+      return;
+    }
+    else
+    {
+      $temp[] = array("", "", "");
+      echo json_encode($temp);
+      return;
+    }
+  }
+  
+  if ($action == 'files')
+  {
+    $sql = "SELECT * FROM sortedfiles WHERE username = '{$userName}' ORDER BY recordnum DESC";        
+    $result = mysqli_query($conn2,$sql);
+
+    $rows = array();
+    
+    while($row = mysqli_fetch_assoc($result))
+    {
+      $rows[] = array($row["inputfile"],$row["selected"]); // Put the data into an associative array
     }
     
     if (count($rows) > 0)          // Results returned increment comment ID value for new comment
@@ -71,7 +97,33 @@ if (!empty($_POST))
   
   if ($action == 'crossCheck')
   {
-    $sql = "SELECT * FROM crosscheck WHERE username = '{$userName}' ORDER BY recordnum ASC";        
+    $sql = "SELECT * FROM crosscheck WHERE username = '{$userName}' ORDER BY recordnum DESC";        
+    $result = mysqli_query($conn2,$sql);
+
+    $rows = array();
+    
+    while($row = mysqli_fetch_assoc($result))
+    {
+      $rows[] = array($row["recordDate"],$row["patientName"],$row["patientAge"],$row["patientHeight"],$row["patientWeight"]); // Put the data into an associative array
+    }
+    
+    if (count($rows) > 0)          // Results returned increment comment ID value for new comment
+    {
+      echo json_encode($rows);    // Json encode the data to send back
+      $conn->close();
+      return;
+    }
+    else
+    {
+      $temp[] = array("", "", "", "", "");
+      echo json_encode($temp);
+      return;
+    }
+  }
+  
+  if ($action == 'percentage')
+  {
+    $sql = "SELECT * FROM percentageinput WHERE username = '{$userName}' ORDER BY recordnum ASC";        
     $result = mysqli_query($conn2,$sql);
 
     $rows = array();
@@ -121,7 +173,7 @@ if (!empty($_POST))
   
   if ($action == 'labelAppointment')
   {
-    $sql = "SELECT labelappointmentinfo.firstname AS firstname, labelappointmentinfo.lastname AS lastname, labelappointmentinfo.age AS age, labelappointmentinput.selected AS selected FROM labelappointmentinput, labelappointmentinfo WHERE labelappointmentinput.username = '{$userName}' AND labelappointmentinput.position = labelappointmentinfo.id ";        
+    $sql = "SELECT labelappointmentinfo.firstname AS firstname, labelappointmentinfo.lastname AS lastname, labelappointmentinfo.age AS age, labelappointmentinput.selected AS selected FROM labelappointmentinput, labelappointmentinfo WHERE labelappointmentinput.username = '{$userName}' AND labelappointmentinput.position = labelappointmentinfo.id";        
     $result = mysqli_query($conn2,$sql);
 
     $rows = array();

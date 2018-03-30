@@ -5,8 +5,9 @@ function checkPrivilege() {
 
   // Checks if user is logged in
   if (user == undefined) {
-    //alert("Please log into your account.");
-    //window.open("Login.html", "_self", false);   // Goes back to the login page
+    sessionStorage.clear();
+    alert("Please log into your account.");
+    window.open("Login.html", "_self", false); // Goes back to the login page
   }
 
   loadData();
@@ -32,10 +33,10 @@ function loadData() {
 
 function generateFileName() {
   text = "";
-  start = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  start = "ABCDEFGHIJKLMNPQRSTUVWXYZ";
   possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-  text += start.charAt(Math.floor(Math.random() * possible.length));
+  text += start.charAt(Math.floor(Math.random() * start.length));
 
   for (var i = 0; i < 7; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
@@ -59,7 +60,7 @@ function submitData() {
   temp.filename = fileName;
   temp.selected = content;
   sendData(temp);
-  return true;
+  //return true;
 }
 
 function sendData(temp) {
@@ -85,7 +86,7 @@ function confirmSave() {
           alert("Something went wrong. Please try again in a few seconds");
         }
       } else {
-        alert('There was a problem with the save.');
+        alert("Something went wrong with the save. Please contact the System Administrator");
       }
     }
     return 1;

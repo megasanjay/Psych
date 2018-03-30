@@ -4,27 +4,40 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Entering Financial Information</title>
+  <title>Label Appointments </title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="labelAppointment.css">
   <script type="text/javascript" src="labelAppointment.js"></script>
 </head>
 
 <body onload="checkPrivilege()">
-  <h1>
-    <span>
+  <div class="topContainer">
+    <h1>
       Label Appointments
-    </span>
-  </h1>
-
+    </h1>
+  </div>
   <br>
 
   <form>
     <fieldset>
-      Patient ID: <input type="label" placeholder="Patient Identification Number" readonly id="idLabel">
-      <br> First Name: <input type="label" placeholder="First Name" readonly id="firstNameLabel">
-      <br> Last Name: <input type="label " placeholder="Last Name" readonly id="lastNameLabel">
-      <br> Age: <input type="label" readonly placeholder="Age" id="ageLabel">
-      <br> Appointment Type: <select id="labelValue">
+      <div>
+        <label>Patient ID:</label> <input type="label" placeholder="Patient Identification Number" readonly id="idLabel">
+      </div>
+      <br>
+      <div>
+        <label>First Name:</label> <input type="label" placeholder="First Name" readonly id="firstNameLabel">
+      </div>
+      <br>
+      <div>
+        <label>Last Name: </label><input type="label" placeholder="Last Name" readonly id="lastNameLabel">
+      </div>
+      <br>
+      <div>
+        <label>Age:</label> <input type="label" readonly placeholder="Age" id="ageLabel">
+      </div>
+      <br>
+      <div>
+        <label>Appointment Type:</label> <select id="labelValue">
         <option disabled selected value="ns"> 
           -- select an option -- 
         </option>
@@ -38,10 +51,13 @@
           Hair Straightened
         </option>
       </select>
+      </div>
       <br>
-      <button onclick="moveAppointment('prev')">Previous</button>
-      <button onclick="submitData()">Submit</button>
-      <button onclick="moveAppointment('next')">Next</button>
+      <div>
+        <button onclick="moveAppointment('prev')" class="createButton buttonPrev"><span> << Previous</span></button>
+        <button onclick="submitData()" class="submitButton"><span>Submit</span></button>
+        <button onclick="moveAppointment('next')" class="createButton"><span>Next >> </span></button>
+      </div>
     </fieldset>
   </form>
 </body>

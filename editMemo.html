@@ -5,20 +5,21 @@
 <head>
   <meta charset="UTF-8" />
   <title>Entering Financial Information</title>
-  <link rel="stylesheet" type="text/css" href="editMemo.html">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="editMemo.css">
   <script type="text/javascript" src="editMemo.js"></script>
 </head>
 
 <body onload="checkPrivilege()">
-  <h1>
-    <span>
+  <div class="topContainer">
+    <h1>
       Check memos for grammatical correctness
-    </span>
-  </h1>
+    </h1>
+  </div>
   <div class="mainContainer">
-    <textarea rows="30" cols="150" id="editTextBox" placeholder="Hello world"></textarea>
+    <textarea rows="17" cols="150" id="editTextBox" placeholder="Hello world" onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}"></textarea>
     <br>
-    <button onclick="submitMemo()">Submit Memo</button>
+    <button class="submitButton" onclick="submitMemo()"><span>Submit Memo</span></button>
   </div>
 </body>
 

@@ -116,7 +116,7 @@ function submitMemo($username, $position, $selected)
   else
   {
     $sql = "SELECT * FROM labelappointmentinput";
-    $numResult = $conn->query($sql);
+    $result = $conn->query($sql);
     
     if ($result->num_rows != 0)
     {

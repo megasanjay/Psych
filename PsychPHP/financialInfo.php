@@ -25,7 +25,9 @@ if (!empty($_POST))
     $arrayObject = json_decode($arrayObject);
     $id = $arrayObject->recordNum;
     $tblUsername = $arrayObject->recordUsername;
-    $data1 = $arrayObject->recordData;
+    $recordDate = $arrayObject->recordDate;
+    $recordCheckNumber = $arrayObject->recordCheckNumber;
+    $recordAmount = $arrayObject->recordAmount;
     
     // Prepare the sql restrictions
     $stmt = $conn->prepare("SELECT * FROM financialinfo WHERE username = ? AND recordnum = ?");
@@ -42,27 +44,27 @@ if (!empty($_POST))
     
     if ($result->num_rows != 0)     // Results returned
     {
-      $stmt = $conn->prepare("UPDATE financialinfo SET data1 = ?, data2 = 0 WHERE username = ? AND recordnum = ?");
+      $stmt = $conn->prepare("UPDATE financialinfo SET recorddate = ?, checknumber = ?, amount = ? WHERE username = ? AND recordnum = ?");
       
       if ($stmt==FALSE)
       {
       	echo "There is a problem with prepare <br>";
       	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
       }
-      $stmt->bind_param("sis", $data1, $tblUsername, $id);
+      $stmt->bind_param("sidsi", $recordDate, $recordCheckNumber, $recordAmount, $tblUsername, $id);
       $stmt->execute(); // Run query
       
     }
     else
     {
-      $stmt = $conn->prepare("INSERT INTO financialinfo (recordnum, username, data1, data2) VALUES (?, ?, ?, 0)");
+      $stmt = $conn->prepare("INSERT INTO financialinfo (recordnum, username, recorddate, checknumber, amount) VALUES (?, ?, ?, ?, ?)");
       
       if ($stmt==FALSE)
       {
       	echo "There is a problem with prepare <br>";
       	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
       }
-      $stmt->bind_param("iss", $id, $tblUsername, $data1);
+      $stmt->bind_param("isssd", $id, $tblUsername, $recordDate, $recordCheckNumber, $recordAmount);
       $stmt->execute(); // Run query
     }
   }

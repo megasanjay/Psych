@@ -4,26 +4,29 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Entering Financial Information</title>
+  <title>Sort Files</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="sortFiles.css">
   <script type="text/javascript" src="sortFiles.js"></script>
 </head>
 
 <body onload="checkPrivilege()">
-  <h1>
-    <span>
-      Sort Files
-    </span>
-  </h1>
+  <div class="topContainer">
+    <h1>
+      Sort these files into the right folders
+    </h1>
+  </div>
 
   <br>
 
   <div id="fileIdentifier"></div>
   <br>
 
-  <form>
-    <fieldset>
-      Select folder to place file in: <select id="sortFile">
+  <div class="inputForm">
+    <div class="inputFieldset">
+      <div>
+        Select folder to place file in: <select id="sortFile">
         <option disabled selected value="ns"> 
           -- select an option -- 
         </option>
@@ -53,11 +56,14 @@
         <option value="X">X</option>
         <option value="Y">Y</option>
         <option value="Z">Z</option>
-      </select>
+        </select>
+      </div>
       <br>
-      <button onclick="return submitData();">Submit</button>
-    </fieldset>
-  </form>
+      <div id="buttonDiv">
+        <button class="submitButton" onclick="return submitData();"><span>Move File to Folder </span></button>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
