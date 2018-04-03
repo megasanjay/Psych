@@ -23,7 +23,7 @@ function loadLastState() {
   httpRequest.onreadystatechange = loadTable;
   httpRequest.open('POST', requestURL);
   httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  httpRequest.send('userName=' + encodeURIComponent(user) + '&action=' + encodeURIComponent('crossCheck'));
+  httpRequest.send('userName=' + encodeURIComponent(user) + '&action=' + encodeURIComponent('crossCheck') + '&reload=' + encodeURIComponent('true'));
 }
 
 function loadTable() {

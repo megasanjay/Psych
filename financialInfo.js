@@ -1,4 +1,5 @@
 var hot;
+var hooks;
 
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
@@ -9,21 +10,19 @@ function checkPrivilege() {
     alert("Please log into your account.");
     window.open("Login.html", "_self", false); // Goes back to the login page
   }
-  //checkRestrictions();
   loadLastState();
-  //loadGrid();
   setInterval(reportState, 3000);
   setInterval(checkForCompletion, 5000);
 }
 
 function loadLastState() {
-  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'><div class='hideBottomText' </div></div>";
+  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'></div>";
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
   httpRequest.open('POST', requestURL);
   httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  httpRequest.send('userName=' + encodeURIComponent(user) + '&action=' + encodeURIComponent('financial'));
+  httpRequest.send('userName=' + encodeURIComponent(user) + '&action=' + encodeURIComponent('financial') + '&reload=' + encodeURIComponent('true'));
 }
 
 function loadTable() {
@@ -45,9 +44,7 @@ function loadTable() {
 }
 
 function reportState() {
-  //alert("running");
   infoArray = [];
-  //alert(hot.countRows());
   for (let i = 0; i <= hot.countRows(); i++) {
     temp = new Object();
     temp.recordNum = i;

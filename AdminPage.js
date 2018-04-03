@@ -10,11 +10,8 @@ function checkPrivilege() {
     //alert("Please log into your account.");
     //window.open("Login.html", "_self", false);   // Goes back to the login page
   }
-  //checkRestrictions();
+
   loadParticipants(user);
-  //loadGrid();
-  //setInterval(reportState, 3000);
-  //setInterval(checkForCompletion, 5000);
 }
 
 function loadParticipants(username) {

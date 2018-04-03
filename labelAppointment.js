@@ -97,7 +97,7 @@ function displayData() {
         document.getElementById("idLabel").value = response.id;
         document.getElementById("firstNameLabel").value = response.firstname;
         document.getElementById("lastNameLabel").value = response.lastname;
-        document.getElementById("ageLabel").value = response.age;
+        document.getElementById("apptNumLabel").value = response.apptnum;
       } else {
         alert('There was a problem with the request.');
       }
