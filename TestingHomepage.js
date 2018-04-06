@@ -5,10 +5,17 @@ function checkPrivilege() {
 
   // Checks if user is logged in
   if (user == undefined) {
-    //alert("Please log into your account.");
-    //window.open("Login.html", "_self", false);   // Goes back to the login page
+    alert("Please log into your account.");
+    window.open("Login.html", "_self", false); // Goes back to the login page
   }
-  checkRestrictions();
+
+  var currentStatus = sessionStorage.getItem("currentStatus");
+
+  if (currentStatus == undefined) {
+    sessionStorage.setItem("currentStatus", "loadedRestrictions");
+    sessionStorage.setItem("limitors", "[]");
+    checkRestrictions();
+  }
 }
 
 function checkRestrictions() {
@@ -31,37 +38,32 @@ function setCurrentState(taskNum) {
 function task(taskNum) {
 
   setCurrentState(taskNum);
+  if (checkLegality(taskNum) == false) {
+    return;
+  };
 
   switch (taskNum) {
     case 1:
       //sessionStorage.setItem("variablename", variable value);
-      sessionStorage.setItem("financialGoal", 50);
       window.open("financialInfo.html", "_self", false);
       break;
     case 2:
       // do task 2
-      //sessionStorage.setItem("lastMemoViewed", 0);
-      sessionStorage.setItem("memoGoal", 2);
       window.open("editMemo.html", "_self", false);
       break;
     case 3:
-      sessionStorage.setItem("crossCheckGoal", 50);
       window.open("crossCheck.html", "_self", false);
       break;
     case 4:
       // do task 4
-      sessionStorage.setItem("sortFilesGoal", 50);
       window.open("sortFiles.html", "_self", false);
       break;
     case 5:
       // do task 5
-      sessionStorage.setItem("percentageGoal", 50);
       window.open("calculatePercentages.html", "_self", false);
       break;
     case 6:
       // do task 6
-      sessionStorage.setItem("labelApptGoal", 10);
-      sessionStorage.setItem("lastApptViewed", 0);
       window.open("labelAppointment.html", "_self", false);
       break;
     default:
@@ -69,18 +71,67 @@ function task(taskNum) {
   }
 }
 
+function checkLegality(taskNum) {
+  let limitArray = sessionStorage.getItem("limitors");
+  limitArray = JSON.parse(limitArray);
+  alert(limitArray[0].limited);
+  for (let i = 0; i < limitArray.length; i++) {
+    if (limitArray[i].limited == taskNum && limitArray[i].status == "notMet") {
+      alert("Condition Not Met");
+      //do something else;
+      return false;
+    }
+  }
+  return true;
+}
+
+function dayOneGoals() {
+  setfunctionalGoals();
+  sessionStorage.setItem("day", 1);
+  sessionStorage.setItem("currentStatus", "dayOneTesting");
+}
+
 function restrictControls(response) {
   for (let i = 0; i < response.length; i++) {
-    restriction = response[i];
-    limiter = restriction.Limiter;
-    limited = restriction.Limited;
+    var restriction = response[i];
+    if (restriction.day == 1) {
+      dayOneGoals();
+      return;
+    } else {
+      limiter = restriction.limiter;
+      limited = restriction.limited;
+      setGoals(limiter, limited);
 
-    document.getElementById(limited).enabled = false;
+      //document.getElementById(limited).enabled = false;
+    }
   }
+  setfunctionalGoals();
+}
+
+function setfunctionalGoals() {
+  sessionStorage.setItem("financialGoal", 10);
+  sessionStorage.setItem("memoGoal", 3);
+  sessionStorage.setItem("crossCheckGoal", 10);
+  sessionStorage.setItem("sortFilesGoal", 10);
+  sessionStorage.setItem("percentageGoal", 10);
+  sessionStorage.setItem("labelApptGoal", 10);
+}
+
+function setGoals(limiter, limited) {
+  var temp = new Object();
+  temp.limiter = limiter;
+  temp.limited = limited;
+  temp.status = "notMet";
+
+  var limitArray = sessionStorage.getItem("limitors");
+  limitArray = JSON.parse(limitArray);
+  limitArray.push(temp);
+  limitArray = JSON.stringify(limitArray);
+  sessionStorage.setItem("limitors", limitArray);
 }
 
 function resetAllButtons() {
-  temp = document.getElementsByClassName("taskButton");
+  var temp = document.getElementsByClassName("taskButton");
 
   for (i = 0; i < temp.length; i++) {
     temp[i].enabled = true;

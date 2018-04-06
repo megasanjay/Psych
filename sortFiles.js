@@ -1,4 +1,5 @@
 var user;
+var tempGoal, goalStatus;
 
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
@@ -10,7 +11,34 @@ function checkPrivilege() {
     window.open("Login.html", "_self", false); // Goes back to the login page
   }
 
+  checkRestrictions();
   loadData();
+}
+
+function checkRestrictions() {
+  var sortFilesGoal;
+  var limitArray = sessionStorage.getItem("limitors");
+  limitArray = JSON.parse(limitArray);
+
+  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
+    tempGoal = sessionStorage.getItem("sortFilesGoal");
+    goalStatus = "initalGoals";
+  }
+
+  for (let i = 0; i < limitArray.length; i++) {
+    if (limitArray[i].limiter == 2 && limitArray[i].status == "notMet") {
+      sortFilesGoal = sessionStorage.getItem("sortFilesGoal");
+      tempGoal = sortFilesGoal;
+      goalStatus = "limiterGoals";
+      break;
+    }
+    if (limitArray[i].limited == 2 && limitArray[i].status == "Met") {
+      sortFilesGoal = sessionStorage.getItem("sortFilesGoal");
+      tempGoal = Math.floor(sortFilesGoal * 0.3);
+      goalStatus = "limitedGoals";
+      break;
+    }
+  }
 }
 
 function loadData() {
@@ -28,7 +56,55 @@ function loadData() {
     window.open("TestingHomepage.html", "_self", false);
   }
 
+  checkForCompletion();
+
   document.getElementById("fileIdentifier").innerHTML = generateFileName();
+}
+
+function checkForCompletion() {
+  var goal;
+  var sortFilesGoal = sessionStorage.getItem("sortFilesGoal");
+  if (goalStatus == "initialGoals") {
+    goal = sortFilesGoal;
+  } else {
+    goal = tempGoal;
+  }
+
+  if (position > goal) {
+    alert("goal complete");
+
+    if (goal >= sortFilesGoal) {
+      sessionStorage.setItem("sortFilesGoal", parseInt(sortFilesGoal) + 10);
+    } else {
+      sessionStorage.setItem("sortFilesGoal", parseInt(sortFilesGoal))
+    }
+    if (goalStatus == "limiterGoals") {
+      let limitArray = sessionStorage.getItem("limitors");
+      limitArray = JSON.parse(limitArray);
+
+      for (let i = 0; i < limitArray.length; i++) {
+        if (limitArray[i].limiter == 4 && limitArray[i].status == "notMet") {
+          limitArray[i].status = "Met";
+        }
+      }
+      limitArray = JSON.stringify(limitArray);
+      sessionStorage.setItem("limitors", limitArray);
+    }
+    if (goalStatus == "limitedGoals") {
+      let limitArray = sessionStorage.getItem("limitors");
+      limitArray = JSON.parse(limitArray);
+
+      for (let i = 0; i < limitArray.length; i++) {
+        if (limitArray[i].limited == 4) {
+          limitArray[i].status = "notMet";
+        }
+      }
+      limitArray = JSON.stringify(limitArray);
+      sessionStorage.setItem("limitors", limitArray);
+    }
+    window.open("TestingHomepage.html", "_self", false);
+  }
+
 }
 
 function generateFileName() {

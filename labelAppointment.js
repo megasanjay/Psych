@@ -1,33 +1,97 @@
 var user;
+var tempGoal, goalStatus;
 
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
 
   // Checks if user is logged in
   if (user == undefined) {
-    //alert("Please log into your account.");
-    //window.open("Login.html", "_self", false);   // Goes back to the login page
+    alert("Please log into your account.");
+    window.open("Login.html", "_self", false); // Goes back to the login page
+  }
+  checkRestrictions();
+  loadData();
+}
+
+function checkRestrictions() {
+  var labelApptGoal;
+  var limitArray = sessionStorage.getItem("limitors");
+  limitArray = JSON.parse(limitArray);
+
+  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
+    tempGoal = sessionStorage.getItem("labelApptGoal");
+    goalStatus = "initalGoals";
   }
 
-  loadData();
+  for (let i = 0; i < limitArray.length; i++) {
+    if (limitArray[i].limiter == 2 && limitArray[i].status == "notMet") {
+      labelApptGoal = sessionStorage.getItem("labelApptGoal");
+      tempGoal = labelApptGoal;
+      goalStatus = "limiterGoals";
+      break;
+    }
+    if (limitArray[i].limited == 2 && limitArray[i].status == "Met") {
+      labelApptGoal = sessionStorage.getItem("labelApptGoal");
+      tempGoal = Math.floor(labelApptGoal * 0.3);
+      goalStatus = "limitedGoals";
+      break;
+    }
+  }
 }
 
 function loadData() {
   position = sessionStorage.getItem("lastApptViewed");
-  goalState = sessionStorage.getItem("labelApptGoal");
 
   if (position == undefined) {
     position = 0;
     sessionStorage.setItem("lastApptViewed", position);
   }
 
-  if (position > goalState) {
-    alert("goal complete");
-    sessionStorage.removeItem("lastApptViewed");
-    window.open("TestingHomepage.html", "_self", false);
+  checkForCompletion();
+  requestData(position);
+}
+
+function checkForCompletion() {
+  var goal;
+  var labelApptGoal = sessionStorage.getItem("labelApptGoal");
+  if (goalStatus == "initialGoals") {
+    goal = labelApptGoal;
+  } else {
+    goal = tempGoal;
   }
 
-  requestData(position);
+  if (position > goal) {
+    alert("goal complete");
+
+    if (goal >= labelApptGoal) {
+      sessionStorage.setItem("labelApptGoal", labelApptGoal + 3);
+    }
+    if (goalStatus = "limiterGoals") {
+      let limitArray = sessionStorage.getItem("limitors");
+      limitArray = JSON.parse(limitArray);
+
+      for (let i = 0; i < limitArray.length; i++) {
+        if (limitArray[i].limiter == 6 && limitArray[i].status == "notMet") {
+          limitArray[i].status = "Met";
+        }
+      }
+      limitArray = JSON.stringify(limitArray);
+      sessionStorage.setItem("limitors", limitArray);
+    }
+    if (goalStatus == "limitedGoals") {
+      let limitArray = sessionStorage.getItem("limitors");
+      limitArray = JSON.parse(limitArray);
+
+      for (let i = 0; i < limitArray.length; i++) {
+        if (limitArray[i].limited == 6) {
+          limitArray[i].status = "notMet";
+        }
+      }
+      limitArray = JSON.stringify(limitArray);
+      sessionStorage.setItem("limitors", limitArray);
+    }
+    window.open("TestingHomepage.html", "_self", false);
+  }
 }
 
 function requestData(position) {

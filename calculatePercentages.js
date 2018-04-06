@@ -1,19 +1,43 @@
 var hot, hooks;
 var setter = true;
+var tempGoal, goalStatus;
 
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
 
   // Checks if user is logged in
   if (user == undefined) {
-    //alert("Please log into your account.");
-    //window.open("Login.html", "_self", false);   // Goes back to the login page
+    alert("Please log into your account.");
+    window.open("Login.html", "_self", false); // Goes back to the login page
   }
-  //loadGrid([[2, 23, 34, 343, 343]]);
+  checkRestrictions();
   loadLastState();
-  //registerHooks();
-  setInterval(reportState, 3000);
-  setInterval(checkForCompletion, 5000);
+}
+
+function checkRestrictions() {
+  var percentageGoal;
+  var limitArray = sessionStorage.getItem("limitors");
+  limitArray = JSON.parse(limitArray);
+
+  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
+    tempGoal = sessionStorage.getItem("percentageGoal");
+    goalStatus = "initalGoals";
+  }
+
+  for (let i = 0; i < limitArray.length; i++) {
+    if (limitArray[i].limiter == 1 && limitArray[i].status == "notMet") {
+      percentageGoal = sessionStorage.getItem("percentageGoal");
+      tempGoal = percentageGoal;
+      goalStatus = "limiterGoals";
+      break;
+    }
+    if (limitArray[i].limited == 1 && limitArray[i].status == "Met") {
+      percentageGoal = sessionStorage.getItem("percentageGoal");
+      tempGoal = Math.floor(percentageGoal * 0.3);
+      goalStatus = "limitedGoals";
+      break;
+    }
+  }
 }
 
 function loadLastState() {
@@ -71,17 +95,56 @@ function sendToServer(infoArray) {
 
 function checkForCompletion() {
   // rework code for row count
-  let dataCount = 0;
-  let goal = sessionStorage.getItem("percentageGoal");
+  let dataCount, rowCount;
+  var goal;
+  var percentageGoal = sessionStorage.getItem("percentageGoal");
+  if (goalStatus == "initialGoals") {
+    goal = percentageGoal;
+  } else {
+    goal = tempGoal;
+  }
+
+  rowCount = 0;
   for (let i = 0; i < hot.countRows(); i++) {
+    dataCount = 0;
     for (let j = 0; j < hot.countCols(); j++) {
       if (hot.getDataAtCell(i, j) != null || hot.getDataAtCell(i, j) != "") {
         dataCount++;
       }
     }
+    if (dataCount == hot.countCols()) {
+      rowCount++;
+    }
   }
 
-  if (dataCount >= goal) {
+  if (rowCount >= goal) {
+    if (goal >= percentageGoal) {
+      sessionStorage.setItem("percentageGoal", percentageGoal + 10);
+    }
+    if (goalStatus = "limiterGoals") {
+      let limitArray = sessionStorage.getItem("limitors");
+      limitArray = JSON.parse(limitArray);
+
+      for (let i = 0; i < limitArray.length; i++) {
+        if (limitArray[i].limiter == 5 && limitArray[i].status == "notMet") {
+          limitArray[i].status = "Met";
+        }
+      }
+      limitArray = JSON.stringify(limitArray);
+      sessionStorage.setItem("limitors", limitArray);
+    }
+    if (goalStatus == "limitedGoals") {
+      let limitArray = sessionStorage.getItem("limitors");
+      limitArray = JSON.parse(limitArray);
+
+      for (let i = 0; i < limitArray.length; i++) {
+        if (limitArray[i].limited == 5) {
+          limitArray[i].status = "notMet";
+        }
+      }
+      limitArray = JSON.stringify(limitArray);
+      sessionStorage.setItem("limitors", limitArray);
+    }
     window.open("TestingHomepage.html", "_self", false);
   }
 }
@@ -109,13 +172,10 @@ function loadGrid(response) {
 
 function registerHooks() {
   Handsontable.hooks.add('afterChange', function (change, source) {
+    reportState();
+    checkForCompletion();
     if (source == 'edit' && setter == true) {
       loadNewApptInfo();
-    }
-  }, hot);
-  Handsontable.hooks.add('afterCreateRow', function () {
-    if (setter == true) {
-      //loadNewApptInfo();
     }
   }, hot);
 }

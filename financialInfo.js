@@ -1,5 +1,9 @@
-var hot;
+var hot, startPos;
 var hooks;
+var tempGoal, goalStatus;
+
+var limitedGoal = 1;
+var limiterGoal = 3;
 
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
@@ -10,9 +14,37 @@ function checkPrivilege() {
     alert("Please log into your account.");
     window.open("Login.html", "_self", false); // Goes back to the login page
   }
+  checkRestrictions();
   loadLastState();
-  setInterval(reportState, 3000);
-  setInterval(checkForCompletion, 5000);
+}
+
+function checkRestrictions() {
+  var financialGoal;
+  var limitArray = sessionStorage.getItem("limitors");
+  limitArray = JSON.parse(limitArray);
+
+  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
+    tempGoal = sessionStorage.getItem("financialGoal");
+    goalStatus = "initalGoals";
+    return;
+  }
+
+  for (let i = 0; i < limitArray.length; i++) {
+    if (limitArray[i].limiter == 1 && limitArray[i].status == "notMet") {
+      financialGoal = sessionStorage.getItem("financialGoal");
+      tempGoal = financialGoal;
+      goalStatus = "limiterGoals";
+      break;
+    }
+    console.log(limitArray[i].limited);
+    console.log(limitArray[i].status);
+    if (limitArray[i].limited == 1 && limitArray[i].status == "Met") {
+      financialGoal = sessionStorage.getItem("financialGoal");
+      tempGoal = Math.ceil(financialGoal * 0.3);
+      goalStatus = "limitedGoals";
+      break;
+    }
+  }
 }
 
 function loadLastState() {
@@ -32,6 +64,7 @@ function loadTable() {
         var response = httpRequest.responseText;
         response = JSON.parse(response);
         loadGrid(response);
+        registerHooks();
       } else {
         alert('There was a problem with request.');
       }
@@ -68,17 +101,55 @@ function sendToServer(infoArray) {
 
 function checkForCompletion() {
   // rework code for row count
-  let dataCount = 0;
-  let goal = sessionStorage.getItem("financialGoal");
+  let dataCount, rowCount;
+  var goal;
+  var financialGoal = sessionStorage.getItem("financialGoal");
+
+  goal = tempGoal;
+
+  rowCount = 0;
   for (let i = 0; i < hot.countRows(); i++) {
+    dataCount = 0;
     for (let j = 0; j < hot.countCols(); j++) {
-      if (hot.getDataAtCell(i, j) != null || hot.getDataAtCell(i, j) != "") {
+      if (hot.getDataAtCell(i, j) != null && hot.getDataAtCell(i, j) != "") {
         dataCount++;
       }
     }
+    if (dataCount == hot.countCols()) {
+      rowCount++;
+    }
   }
 
-  if (dataCount >= goal) {
+  if (rowCount >= goal) {
+    if (goal >= financialGoal) {
+      sessionStorage.setItem("financialGoal", parseInt(financialGoal) + 10);
+    }
+    //recheck goals;
+    if (goalStatus == "limiterGoals") {
+      let limitArray = sessionStorage.getItem("limitors");
+      limitArray = JSON.parse(limitArray);
+
+      for (let i = 0; i < limitArray.length; i++) {
+        if (limitArray[i].limiter == 1 && limitArray[i].status == "notMet") {
+          limitArray[i].status = "Met";
+        }
+      }
+      limitArray = JSON.stringify(limitArray);
+      sessionStorage.setItem("limitors", limitArray);
+    }
+    if (goalStatus == "limitedGoals") {
+
+      let limitArray = sessionStorage.getItem("limitors");
+      limitArray = JSON.parse(limitArray);
+      for (let i = 0; i < limitArray.length; i++) {
+        if (limitArray[i].limited == 1) {
+          limitArray[i].status = "notMet";
+        }
+      }
+      limitArray = JSON.stringify(limitArray);
+      sessionStorage.setItem("limitors", limitArray);
+    }
+
     window.open("TestingHomepage.html", "_self", false);
   }
 }
@@ -102,4 +173,11 @@ function loadGrid(response) {
       autoInsertRow: false,
     }
   });
+}
+
+function registerHooks() {
+  Handsontable.hooks.add('afterChange', function (change, source) {
+    reportState();
+    checkForCompletion();
+  }, hot);
 }

@@ -1,19 +1,49 @@
-var hot;
-var rowCount = 9;
-var colCount = 5;
-var user;
+var user, startPos;
+var tempGoal, goalStatus;
+
+var limitedGoal = 1;
+var limiterGoal = 3;
 
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
 
   // Checks if user is logged in
   if (user == undefined) {
-    //alert("Please log into your account.");
-    //window.open("Login.html", "_self", false);   // Goes back to the login page
+    alert("Please log into your account.");
+    window.open("Login.html", "_self", false); // Goes back to the login page
   }
 
+  startPos = sessionStorage.getItem("lastMemoViewed");
+  checkRestrictions();
   setInterval(submitChanges, 5000);
   loadMemo();
+}
+
+function checkRestrictions() {
+  var memoGoal;
+  var limitArray = sessionStorage.getItem("limitors");
+  limitArray = JSON.parse(limitArray);
+
+  tempGoal = sessionStorage.getItem("memoGoal");
+
+  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
+    goalStatus = "initalGoals";
+  }
+
+  for (let i = 0; i < limitArray.length; i++) {
+    if (limitArray[i].limiter == 2 && limitArray[i].status == "notMet") {
+      memoGoal = sessionStorage.getItem("memoGoal");
+      tempGoal = memoGoal;
+      goalStatus = "limiterGoals";
+      break;
+    }
+    if (limitArray[i].limited == 2 && limitArray[i].status == "Met") {
+      memoGoal = sessionStorage.getItem("memoGoal");
+      tempGoal = parseInt(startPos) + parseInt(limiterGoal);
+      goalStatus = "limitedGoals";
+      break;
+    }
+  }
 }
 
 function loadMemo() {
@@ -21,17 +51,57 @@ function loadMemo() {
   goalState = sessionStorage.getItem("memoGoal");
 
   if (position == undefined) {
-    position = 0;
+    position = 1;
     sessionStorage.setItem("lastMemoViewed", position);
+    startPos = position;
   }
 
-  if (position > goalState) {
-    alert("goal complete");
-    sessionStorage.removeItem("lastMemoViewed");
+  checkForCompletion(position);
+  requestMemo(position);
+}
+
+function checkForCompletion(position) {
+  var goal = tempGoal;
+  var memoGoal = sessionStorage.getItem("memoGoal");
+  if (goalStatus == "limitedGoals") {
+    goal = tempGoal;
+  } else {
+    goal = memoGoal;
+  }
+
+  if (position > goal) {
+    if (goalStatus == "limitedGoals") {
+      sessionStorage.setItem("memoGoal", parseInt(memoGoal) + parseInt(limitedGoal));
+    } else {
+      sessionStorage.setItem("memoGoal", parseInt(memoGoal) + parseInt(limiterGoal));
+    }
+    if (goalStatus == "limiterGoals") {
+      let limitArray = sessionStorage.getItem("limitors");
+      limitArray = JSON.parse(limitArray);
+
+      for (let i = 0; i < limitArray.length; i++) {
+        if (limitArray[i].limiter == 2 && limitArray[i].status == "notMet") {
+          limitArray[i].status = "Met";
+        }
+      }
+      limitArray = JSON.stringify(limitArray);
+      sessionStorage.setItem("limitors", limitArray);
+    }
+    if (goalStatus == "limitedGoals") {
+      let limitArray = sessionStorage.getItem("limitors");
+      limitArray = JSON.parse(limitArray);
+
+      for (let i = 0; i < limitArray.length; i++) {
+        if (limitArray[i].limited == 2) {
+          limitArray[i].status = "notMet";
+        }
+      }
+      limitArray = JSON.stringify(limitArray);
+      sessionStorage.setItem("limitors", limitArray);
+    }
+    alert(memoGoal);
     window.open("TestingHomepage.html", "_self", false);
   }
-
-  requestMemo(position);
 }
 
 function requestMemo(position) {
