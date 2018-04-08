@@ -64,7 +64,6 @@ function alertContents_getPassword() {
         if (document.getElementById("emailTextBox").value != responseEmailAddress) {
           document.getElementById("emailTextBox").classList.remove("regularTextbox");
           document.getElementById("emailTextBox").classList.add("errorTextbox");
-          alert(responseEmailAddress);
           alert("Incorrect email address. Please enter the correct email address");
         }
 

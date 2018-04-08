@@ -1,5 +1,7 @@
 <?php
 
+// do memo escape string
+
 $servername = 'localhost'; // default server name
 $serverusername = 'psychUser'; // user name that you created
 $serverpassword = 'N20t54TjPQKEmVhl'; // password that you created
@@ -20,6 +22,8 @@ if (!empty($_POST))
     $username = $_POST["username"];
     $position = $_POST["position"];
     $memo = $_POST["memo"];
+    
+    $memo = $conn->real_escape_string($memo);
     
     submitMemo($username, $position, $memo);
   }
@@ -70,15 +74,8 @@ function submitMemo($username, $position, $memo)
     $sql = "SELECT * FROM memoinput";
     $numResult = $conn->query($sql);
     
-    if ($result->num_rows != 0)
-    {
-       $stmt = $conn->prepare("INSERT INTO memoinput (id, memoID, username, memoText) VALUES (0,?,?,?)");
-    }
-    else
-    {
-       $stmt = $conn->prepare("INSERT INTO memoinput (memoID, username, memoText) VALUES (?,?,?)");
-    }
-    
+    $stmt = $conn->prepare("INSERT INTO memoinput (memoID, username, memoText) VALUES (?,?,?)");
+
     if ($stmt==FALSE)
     {
       echo "There is a problem with prepare <br>";

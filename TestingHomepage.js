@@ -74,7 +74,6 @@ function task(taskNum) {
 function checkLegality(taskNum) {
   let limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
-  alert(limitArray[0].limited);
   for (let i = 0; i < limitArray.length; i++) {
     if (limitArray[i].limited == taskNum && limitArray[i].status == "notMet") {
       alert("Condition Not Met");
@@ -114,7 +113,7 @@ function setfunctionalGoals() {
   sessionStorage.setItem("crossCheckGoal", 10);
   sessionStorage.setItem("sortFilesGoal", 10);
   sessionStorage.setItem("percentageGoal", 10);
-  sessionStorage.setItem("labelApptGoal", 10);
+  sessionStorage.setItem("labelApptGoal", 3);
 }
 
 function setGoals(limiter, limited) {

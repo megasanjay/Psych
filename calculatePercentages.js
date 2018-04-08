@@ -2,6 +2,9 @@ var hot, hooks;
 var setter = true;
 var tempGoal, goalStatus;
 
+var limitedGoal = 3;
+var limiterGoal = 10;
+
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
 
@@ -10,30 +13,26 @@ function checkPrivilege() {
     alert("Please log into your account.");
     window.open("Login.html", "_self", false); // Goes back to the login page
   }
+
   checkRestrictions();
   loadLastState();
 }
 
 function checkRestrictions() {
-  var percentageGoal;
+  var percentageGoal = sessionStorage.getItem("percentageGoal");
   var limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
 
-  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
-    tempGoal = sessionStorage.getItem("percentageGoal");
-    goalStatus = "initalGoals";
-  }
+  tempGoal = sessionStorage.getItem("percentageGoal");
 
   for (let i = 0; i < limitArray.length; i++) {
     if (limitArray[i].limiter == 1 && limitArray[i].status == "notMet") {
-      percentageGoal = sessionStorage.getItem("percentageGoal");
       tempGoal = percentageGoal;
       goalStatus = "limiterGoals";
       break;
     }
     if (limitArray[i].limited == 1 && limitArray[i].status == "Met") {
-      percentageGoal = sessionStorage.getItem("percentageGoal");
-      tempGoal = Math.floor(percentageGoal * 0.3);
+      tempGoal = parseInt(percentageGoal) - (limiterGoal - limitedGoal);
       goalStatus = "limitedGoals";
       break;
     }
@@ -96,13 +95,8 @@ function sendToServer(infoArray) {
 function checkForCompletion() {
   // rework code for row count
   let dataCount, rowCount;
-  var goal;
+  var goal = tempGoal;
   var percentageGoal = sessionStorage.getItem("percentageGoal");
-  if (goalStatus == "initialGoals") {
-    goal = percentageGoal;
-  } else {
-    goal = tempGoal;
-  }
 
   rowCount = 0;
   for (let i = 0; i < hot.countRows(); i++) {
@@ -118,10 +112,14 @@ function checkForCompletion() {
   }
 
   if (rowCount >= goal) {
-    if (goal >= percentageGoal) {
-      sessionStorage.setItem("percentageGoal", percentageGoal + 10);
+    if (goalStatus == "limitedGoals") {
+      sessionStorage.setItem("percentageGoal", parseInt(percentageGoal) + parseInt(limitedGoal));
+    } else {
+      alert("Goal Complete");
+      sessionStorage.setItem("percentageGoal", parseInt(percentageGoal) + parseInt(limiterGoal));
     }
-    if (goalStatus = "limiterGoals") {
+
+    if (goalStatus == "limiterGoals") {
       let limitArray = sessionStorage.getItem("limitors");
       limitArray = JSON.parse(limitArray);
 
@@ -170,6 +168,20 @@ function loadGrid(response) {
   });
 }
 
+function runSaveAnimation() {
+  var wedge = document.getElementById("refreshing");
+
+  wedge.classList.remove("hidden");
+  wedge.classList.add("shown");
+
+  setTimeout(function () {
+    var wedge = document.getElementById("refreshing");
+
+    wedge.classList.remove("shown");
+    wedge.classList.add("hidden");
+  }, 600);
+}
+
 function registerHooks() {
   Handsontable.hooks.add('afterChange', function (change, source) {
     reportState();
@@ -177,6 +189,7 @@ function registerHooks() {
     if (source == 'edit' && setter == true) {
       loadNewApptInfo();
     }
+    runSaveAnimation();
   }, hot);
 }
 

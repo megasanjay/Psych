@@ -14,17 +14,22 @@ function checkPrivilege() {
   }
 
   startPos = sessionStorage.getItem("lastMemoViewed");
+
+  if (startPos == undefined) {
+    startPos = 1;
+  }
+
   checkRestrictions();
   setInterval(submitChanges, 5000);
   loadMemo();
 }
 
 function checkRestrictions() {
-  var memoGoal;
+  var memoGoal = sessionStorage.getItem("memoGoal");
   var limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
 
-  tempGoal = sessionStorage.getItem("memoGoal");
+  tempGoal = memoGoal;
 
   if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
     goalStatus = "initalGoals";
@@ -32,13 +37,10 @@ function checkRestrictions() {
 
   for (let i = 0; i < limitArray.length; i++) {
     if (limitArray[i].limiter == 2 && limitArray[i].status == "notMet") {
-      memoGoal = sessionStorage.getItem("memoGoal");
-      tempGoal = memoGoal;
       goalStatus = "limiterGoals";
       break;
     }
     if (limitArray[i].limited == 2 && limitArray[i].status == "Met") {
-      memoGoal = sessionStorage.getItem("memoGoal");
       tempGoal = parseInt(startPos) + parseInt(limiterGoal);
       goalStatus = "limitedGoals";
       break;
@@ -63,18 +65,15 @@ function loadMemo() {
 function checkForCompletion(position) {
   var goal = tempGoal;
   var memoGoal = sessionStorage.getItem("memoGoal");
-  if (goalStatus == "limitedGoals") {
-    goal = tempGoal;
-  } else {
-    goal = memoGoal;
-  }
 
   if (position > goal) {
     if (goalStatus == "limitedGoals") {
       sessionStorage.setItem("memoGoal", parseInt(memoGoal) + parseInt(limitedGoal));
     } else {
+      alert("Goal Complete");
       sessionStorage.setItem("memoGoal", parseInt(memoGoal) + parseInt(limiterGoal));
     }
+
     if (goalStatus == "limiterGoals") {
       let limitArray = sessionStorage.getItem("limitors");
       limitArray = JSON.parse(limitArray);
@@ -99,7 +98,6 @@ function checkForCompletion(position) {
       limitArray = JSON.stringify(limitArray);
       sessionStorage.setItem("limitors", limitArray);
     }
-    alert(memoGoal);
     window.open("TestingHomepage.html", "_self", false);
   }
 }
@@ -114,6 +112,7 @@ function requestMemo(position) {
 }
 
 function submitMemo() {
+  runSaveAnimation();
   position = sessionStorage.getItem("lastMemoViewed");
   content = document.getElementById("editTextBox").value;
   sendMemo(position, content);
@@ -154,6 +153,20 @@ function displayMemo() {
   {
     alert('Caught Exception: ' + e.description);
   }
+}
+
+function runSaveAnimation() {
+  var wedge = document.getElementById("refreshing");
+
+  wedge.classList.remove("hidden");
+  wedge.classList.add("shown");
+
+  setTimeout(function () {
+    var wedge = document.getElementById("refreshing");
+
+    wedge.classList.remove("shown");
+    wedge.classList.add("hidden");
+  }, 600);
 }
 
 function confirmSave() {

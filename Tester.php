@@ -12,6 +12,7 @@ if (!empty($_POST))
   
   // Create connection
   $conn = new mysqli($servername, $username, $password, $dbname);
+  $conn2 = mysqli_connect($servername, $username, $password, $dbname);
 
   // Check connection
   if ($conn->connect_error)
@@ -60,29 +61,18 @@ if (!empty($_POST))
   }
   
   // Prepare the sql restrictions
-  $stmt = $conn->prepare("SELECT * FROM restrictions WHERE username = ?");
-  if ($stmt==FALSE)
+  $sql = "SELECT * FROM restrictions WHERE username = '{$userName}'";
+  
+  $result = mysqli_query($conn2,$sql);
+  $rows = array();
+  
+  while($row = mysqli_fetch_assoc($result))
   {
-  	echo "There is a problem with prepare <br>";
-  	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+    $rows[] = array("limiter"=>$row["limiter"],"limited"=>$row["limited"], "day"=>$row["day"]); // Put the data into an associative array
   }
-  $stmt->bind_param("s", $userName);
-
-  $stmt->execute();               // Run query
-  $result = $stmt->get_result();  // query result
-
-  if ($result->num_rows != 0)     // Results returned
-  {
-    $row = $result->fetch_assoc(); // Fetch a result row as an associative array
-    echo json_encode($row, JSON_PRETTY_PRINT);    // Return data encoded in JSON
-    return;
-  }
-  else
-  {
-    echo "None";
-  }
-
-  $conn->close();
+  
+  echo json_encode($rows);
+  return;
 }
 else
 {

@@ -25,12 +25,14 @@ if (!empty($_POST))
     $arrayObject = json_decode($arrayObject);
     $id = $arrayObject->recordNum;
     $tblUsername = $arrayObject->recordUsername;
-    $recordDate = $arrayObject->recordDate;
-    $recordCheckNumber = $arrayObject->recordCheckNumber;
-    $recordAmount = $arrayObject->recordAmount;
+    $recordApptAttend = $arrayObject->recordApptAttend;
+    $recordApptLate = $arrayObject->recordApptLate;
+    $recordApptNotAttend = $arrayObject->recordApptNotAttend;
+    $recordPercentAttend = $arrayObject->recordPercentAttend;
+    $recordPercentLate = $arrayObject->recordPercentLate;
     
     // Prepare the sql restrictions
-    $stmt = $conn->prepare("SELECT * FROM financialinfo WHERE username = ? AND recordnum = ?");
+    $stmt = $conn->prepare("SELECT * FROM percentageinput WHERE username = ? AND recordnum = ?");
     
     if ($stmt == FALSE)
     {
@@ -44,27 +46,29 @@ if (!empty($_POST))
     
     if ($result->num_rows != 0)     // Results returned
     {
-      $stmt = $conn->prepare("UPDATE financialinfo SET recorddate = ?, checknumber = ?, amount = ? WHERE username = ? AND recordnum = ?");
+      $stmt = $conn->prepare("UPDATE percentageinput SET apptattend = ?, apptlate = ?, apptnotattend = ?, percentattend = ?, percentlate = ? WHERE username = ? AND recordnum = ?");
       
       if ($stmt==FALSE)
       {
       	echo "There is a problem with prepare <br>";
       	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
       }
-      $stmt->bind_param("sidsi", $recordDate, $recordCheckNumber, $recordAmount, $tblUsername, $id);
+      // when binding use double for data2
+      $stmt->bind_param("iiiddsi", $recordApptAttend, $recordApptLate, $recordApptNotAttend, $recordPercentAttend, $recordPercentLate, $tblUsername, $id);
       $stmt->execute(); // Run query
       
     }
     else
     {
-      $stmt = $conn->prepare("INSERT INTO financialinfo (recordnum, username, recorddate, checknumber, amount) VALUES (?, ?, ?, ?, ?)");
+      $stmt = $conn->prepare("INSERT INTO percentageinput (recordnum, username, apptattend, apptlate, apptnotattend, percentattend, percentlate) VALUES (?, ?, ?, ?, ?, ?, ?)");
       
       if ($stmt==FALSE)
       {
       	echo "There is a problem with prepare <br>";
       	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
       }
-      $stmt->bind_param("isssd", $id, $tblUsername, $recordDate, $recordCheckNumber, $recordAmount);
+      // when binding use double for data2
+      $stmt->bind_param("isiiidd", $id, $tblUsername, $recordApptAttend, $recordApptLate, $recordApptNotAttend, $recordPercentAttend, $recordPercentLate);
       $stmt->execute(); // Run query
     }
   }

@@ -12,19 +12,49 @@ body {
   display: block;
 }
 
-#mainContainer {
+.tableGridContainer {
   width: auto;
-  height: 50%;
-  border: 1px solid red;
+  height: auto;
+  margin-bottom: 2em;
 }
 
-#gridContainer {
-  height: 100%;
-  overflow: scroll;
+.tableContainer {
+  height: auto;
 }
 
 #participantsContainer {
+  display: inline;
   margin-bottom: 1em;
+  margin-left: 10px;
+}
+
+#participantsList {
+  display: inline;
+}
+
+li {
+  display: inline-block;
+}
+
+#buttonContainer {
+  display: inline;
+  padding-bottom: 1em;
+  margin-left: 10px;
+}
+
+.switchLabel {
+  font-family: 'Lato', sans-serif;
+  font-size: 17px;
+}
+
+.adminOptions {
+  display: inline-block;
+  padding-right: 10px;
+  padding-left: 10px;
+  margin-bottom: 1em;
+  border: 0.5px solid grey;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 span {
@@ -34,6 +64,33 @@ span {
 *:focus {
   outline: none;
 }
+
+/*
+buttons
+*/
+
+button {
+  display: inline-block;
+  padding: 0.35em 1.2em;
+  border: 0.1em solid #FFFFFF;
+  margin: 0 0.3em 0.3em 0;
+  border-radius: 0.12em;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: 'Roboto', sans-serif;
+  font-size: 17px;
+  font-weight: 300;
+  color: #000000;
+  text-align: center;
+  transition: all 0.2s;
+  background-color: transparent;
+}
+
+button:hover {
+  color: #000000;
+  background-color: #FFFFFF;
+}
+
 
 /**************
   Handsontable
@@ -46,7 +103,7 @@ span {
   height: 80px;
   width: auto;
   padding: 10px 20px 20px 20px;
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
   font-family: 'Roboto', sans-serif;
 }
 
@@ -86,3 +143,267 @@ table.htCore tbody tr td {
 .topText {
   font-size: 35px;
 }
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 14px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 10px;
+  width: 10px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(15px);
+  -ms-transform: translateX(15px);
+  transform: translateX(15px);
+}
+
+/* Rounded sliders */
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Ellipsis*/
+
+#refreshing {
+  height: auto;
+  width: auto;
+  position: fixed;
+  right: 2em;
+  top: 20px;
+}
+
+@keyframes lds-ellipsis3 {
+  0%,
+  25% {
+    left: 32px;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  50% {
+    left: 32px;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  75% {
+    left: 100px;
+  }
+  100% {
+    left: 168px;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@-webkit-keyframes lds-ellipsis3 {
+  0%,
+  25% {
+    left: 32px;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  50% {
+    left: 32px;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  75% {
+    left: 100px;
+  }
+  100% {
+    left: 168px;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes lds-ellipsis2 {
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  25%,
+  100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+}
+
+@-webkit-keyframes lds-ellipsis2 {
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  25%,
+  100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+}
+
+@keyframes lds-ellipsis {
+  0% {
+    left: 32px;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  25% {
+    left: 32px;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  50% {
+    left: 100px;
+  }
+  75% {
+    left: 168px;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  100% {
+    left: 168px;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+}
+
+@-webkit-keyframes lds-ellipsis {
+  0% {
+    left: 32px;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  25% {
+    left: 32px;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  50% {
+    left: 100px;
+  }
+  75% {
+    left: 168px;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+  100% {
+    left: 168px;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+}
+
+.lds-ellipsis {
+  position: relative;
+}
+
+.lds-ellipsis > div {
+  position: absolute;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+}
+
+.lds-ellipsis div > div {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f00;
+  position: absolute;
+  top: 100px;
+  left: 32px;
+  -webkit-animation: lds-ellipsis 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite forwards;
+  animation: lds-ellipsis 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite forwards;
+}
+
+.lds-ellipsis div:nth-child(1) div {
+  -webkit-animation: lds-ellipsis2 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite forwards;
+  animation: lds-ellipsis2 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite forwards;
+  background: #ff6d00;
+}
+
+.lds-ellipsis div:nth-child(2) div {
+  -webkit-animation-delay: -0.6s;
+  animation-delay: -0.6s;
+  background: #ff003a;
+}
+
+.lds-ellipsis div:nth-child(3) div {
+  -webkit-animation-delay: -0.3s;
+  animation-delay: -0.3s;
+  background: #e7008a;
+}
+
+.lds-ellipsis div:nth-child(4) div {
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+  background: #4658ac;
+}
+
+.lds-ellipsis div:nth-child(5) div {
+  -webkit-animation: lds-ellipsis3 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite forwards;
+  animation: lds-ellipsis3 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite forwards;
+  background: #ff6d00;
+}
+
+.lds-ellipsis {
+  width: 68px !important;
+  height: 68px !important;
+  -webkit-transform: translate(-34px, -34px) scale(0.34) translate(34px, 34px);
+  transform: translate(-34px, -34px) scale(0.34) translate(34px, 34px);
+}
+
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.8s linear;
+}
+
+.shown {
+  visibility: visible;
+  opacity: 1;
+  transition: all 0.8s linear;
+}
+
+/* Ellipsis*/

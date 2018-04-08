@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Entering Financial Information</title>
+  <title>Admin Page</title>
   <script src="https://docs.handsontable.com/pro/bower_components/handsontable-pro/dist/handsontable.full.min.js"></script>
   <link rel="stylesheet" type="text/css" href="https://docs.handsontable.com/pro/bower_components/handsontable-pro/dist/handsontable.full.min.css">
   <link rel="stylesheet" type="text/css" href="https://handsontable.com/static/css/main.css">
@@ -20,14 +20,79 @@
       Admin Homepage
     </h1>
   </div>
-  <br>
+  <div id="refreshing" class="hidden">
+    <div class="lds-css ng-scope">
+      <div style="width:100%;height:100%" class="lds-ellipsis">
+        <div>
+          <div></div>
+        </div>
+        <div>
+          <div></div>
+        </div>
+        <div>
+          <div></div>
+        </div>
+        <div>
+          <div></div>
+        </div>
+        <div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="buttonContainer">
+    <div class="adminOptions">
+      <label class="switchLabel">Show Participants:</label>
+      <label class="switch">
+      <input id = "particpantsCheckBox" type="checkbox" onchange="showParticipants()" checked = "true">
+      <span class="slider round"></span>
+    </label>
+    </div>
+    <div class="adminOptions">
+      <label class="switchLabel">Show Live Feed:</label>
+      <label class="switch">
+      <input id = "liveFeedCheckBox" type="checkbox" onchange="showLiveFeed()" checked = "true">
+      <span class="slider round"></span>
+    </label>
+    </div>
+    <div class="adminOptions">
+      <label class="switchLabel">Show Restrictions:</label>
+      <label class="switch">
+      <input id = "restrictionsCheckBox" type="checkbox" onchange="showRestrictions()" checked = "true">
+      <span class="slider round"></span>
+    </label>
+    </div>
+    <div class="adminOptions">
+      <label class="switchLabel">Show Login Info:</label>
+      <label class="switch">
+      <input id = "loginCheckBox" type="checkbox" onchange="showLogin()" checked = "true">
+      <span class="slider round"></span>
+    </label>
+    </div>
+    <div class="adminOptions">
+      <label class="switchLabel">Auto-Refresh:</label>
+      <label class="switch">
+      <input id = "autoRefreshCheckBox" type="checkbox" onchange="autoRefresh()" checked = "true">
+      <span class="slider round"></span>
+    </label>
+    </div>
+  </div>
   <div id="participantsContainer">
     <ul id="participantsList"></ul>
   </div>
   <br>
   <div id="participantFeed"></div>
-  <div id="mainContainer">
-    <div id="gridContainer" onscroll="pes">
+  <div id="mainContainer" class="tableGridContainer">
+    <div id="gridContainer" class="tableContainer">
+    </div>
+  </div>
+  <div id="mainContainer2" class="tableGridContainer">
+    <div id="gridContainer2" class="tableContainer">
+    </div>
+  </div>
+  <div id="mainContainer3" class="tableGridContainer">
+    <div id="gridContainer3" class="tableContainer">
     </div>
   </div>
 </body>

@@ -1,9 +1,9 @@
-var hot, startPos;
+var hot;
 var hooks;
 var tempGoal, goalStatus;
 
-var limitedGoal = 1;
-var limiterGoal = 3;
+var limitedGoal = 3;
+var limiterGoal = 10;
 
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
@@ -14,33 +14,26 @@ function checkPrivilege() {
     alert("Please log into your account.");
     window.open("Login.html", "_self", false); // Goes back to the login page
   }
+
   checkRestrictions();
   loadLastState();
 }
 
 function checkRestrictions() {
-  var financialGoal;
+  var financialGoal = sessionStorage.getItem("financialGoal");
   var limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
 
-  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
-    tempGoal = sessionStorage.getItem("financialGoal");
-    goalStatus = "initalGoals";
-    return;
-  }
+  tempGoal = sessionStorage.getItem("financialGoal");
 
   for (let i = 0; i < limitArray.length; i++) {
     if (limitArray[i].limiter == 1 && limitArray[i].status == "notMet") {
-      financialGoal = sessionStorage.getItem("financialGoal");
       tempGoal = financialGoal;
       goalStatus = "limiterGoals";
       break;
     }
-    console.log(limitArray[i].limited);
-    console.log(limitArray[i].status);
     if (limitArray[i].limited == 1 && limitArray[i].status == "Met") {
-      financialGoal = sessionStorage.getItem("financialGoal");
-      tempGoal = Math.ceil(financialGoal * 0.3);
+      tempGoal = parseInt(financialGoal) - (limiterGoal - limitedGoal);
       goalStatus = "limitedGoals";
       break;
     }
@@ -49,7 +42,7 @@ function checkRestrictions() {
 
 function loadLastState() {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'></div>";
-  var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
+  var requestURL = "http://csci130.xyz/Psych/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
   httpRequest.open('POST', requestURL);
@@ -102,10 +95,8 @@ function sendToServer(infoArray) {
 function checkForCompletion() {
   // rework code for row count
   let dataCount, rowCount;
-  var goal;
+  var goal = tempGoal;
   var financialGoal = sessionStorage.getItem("financialGoal");
-
-  goal = tempGoal;
 
   rowCount = 0;
   for (let i = 0; i < hot.countRows(); i++) {
@@ -121,9 +112,13 @@ function checkForCompletion() {
   }
 
   if (rowCount >= goal) {
-    if (goal >= financialGoal) {
-      sessionStorage.setItem("financialGoal", parseInt(financialGoal) + 10);
+    if (goalStatus == "limitedGoals") {
+      sessionStorage.setItem("financialGoal", parseInt(financialGoal) + parseInt(limitedGoal));
+    } else {
+      alert("Goal Complete");
+      sessionStorage.setItem("financialGoal", parseInt(financialGoal) + parseInt(limiterGoal));
     }
+
     //recheck goals;
     if (goalStatus == "limiterGoals") {
       let limitArray = sessionStorage.getItem("limitors");
@@ -175,9 +170,24 @@ function loadGrid(response) {
   });
 }
 
+function runSaveAnimation() {
+  var wedge = document.getElementById("refreshing");
+
+  wedge.classList.remove("hidden");
+  wedge.classList.add("shown");
+
+  setTimeout(function () {
+    var wedge = document.getElementById("refreshing");
+
+    wedge.classList.remove("shown");
+    wedge.classList.add("hidden");
+  }, 600);
+}
+
 function registerHooks() {
   Handsontable.hooks.add('afterChange', function (change, source) {
     reportState();
     checkForCompletion();
+    runSaveAnimation();
   }, hot);
 }

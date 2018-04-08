@@ -2,6 +2,9 @@ var hot;
 var hooks;
 var tempGoal, goalStatus;
 
+var limitedGoal = 3;
+var limiterGoal = 10;
+
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
 
@@ -11,6 +14,7 @@ function checkPrivilege() {
     alert("Please log into your account.");
     window.open("Login.html", "_self", false); // Goes back to the login page
   }
+
   checkRestrictions();
   loadLastState();
 }
@@ -20,10 +24,7 @@ function checkRestrictions() {
   var limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
 
-  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
-    tempGoal = sessionStorage.getItem("crossCheckGoal");
-    goalStatus = "initalGoals";
-  }
+  tempGoal = sessionStorage.getItem("crossCheckGoal");
 
   for (let i = 0; i < limitArray.length; i++) {
     if (limitArray[i].limiter == 1 && limitArray[i].status == "notMet") {
@@ -34,7 +35,7 @@ function checkRestrictions() {
     }
     if (limitArray[i].limited == 1 && limitArray[i].status == "Met") {
       crossCheckGoal = sessionStorage.getItem("crossCheckGoal");
-      tempGoal = Math.floor(crossCheckGoal * 0.3);
+      tempGoal = parseInt(crossCheckGoal) - (limiterGoal - limitedGoal);
       goalStatus = "limitedGoals";
       break;
     }
@@ -98,13 +99,8 @@ function sendToServer(infoArray) {
 function checkForCompletion() {
   // rework code for row count
   let dataCount, rowCount;
-  var goal;
+  var goal = tempGoal;
   var crossCheckGoal = sessionStorage.getItem("crossCheckGoal");
-  if (goalStatus == "initialGoals") {
-    goal = crossCheckGoal;
-  } else {
-    goal = tempGoal;
-  }
 
   rowCount = 0;
   for (let i = 0; i < hot.countRows(); i++) {
@@ -120,10 +116,14 @@ function checkForCompletion() {
   }
 
   if (rowCount >= goal) {
-    if (goal >= crossCheckGoal) {
-      sessionStorage.setItem("crossCheckGoal", crossCheckGoal + 10);
+    if (goalStatus == "limitedGoals") {
+      sessionStorage.setItem("crossCheckGoal", parseInt(crossCheckGoal) + parseInt(limitedGoal));
+    } else {
+      alert("Goal Complete");
+      sessionStorage.setItem("crossCheckGoal", parseInt(crossCheckGoal) + parseInt(limiterGoal));
     }
-    if (goalStatus = "limiterGoals") {
+
+    if (goalStatus == "limiterGoals") {
       let limitArray = sessionStorage.getItem("limitors");
       limitArray = JSON.parse(limitArray);
 
@@ -172,9 +172,24 @@ function loadGrid(response) {
   });
 }
 
+function runSaveAnimation() {
+  var wedge = document.getElementById("refreshing");
+
+  wedge.classList.remove("hidden");
+  wedge.classList.add("shown");
+
+  setTimeout(function () {
+    var wedge = document.getElementById("refreshing");
+
+    wedge.classList.remove("shown");
+    wedge.classList.add("hidden");
+  }, 600);
+}
+
 function registerHooks() {
   Handsontable.hooks.add('afterChange', function (change, source) {
     reportState();
     checkForCompletion();
+    runSaveAnimation();
   }, hot);
 }

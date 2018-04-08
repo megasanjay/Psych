@@ -1,12 +1,14 @@
 <?php
 
+require_once("nameGenerator.php");
+
 $servername = 'localhost'; // default server name
 $serverusername = 'psychUser'; // user name that you created
 $serverpassword = 'N20t54TjPQKEmVhl'; // password that you created
 $dbname = 'psych';
 
 if (!empty($_POST))
-{
+{ 
   $action = $_POST['action'];
   
   if ($action == 'request')
@@ -42,8 +44,8 @@ function checkMove($position)
 {
   if ($position < 0)
   {
-    //echo "Rejected";
-    //return;
+    echo "Rejected";
+    return;
   }
   
   // Create connection
@@ -66,15 +68,41 @@ function checkMove($position)
   
   $stmt->execute();
   $result = $stmt->get_result();
-  if ($result->num_rows != 0)     // Results returned
+  if ($result->num_rows == 0)     // Results returned
   {
-    echo $position;
+    addNewRecord($position);
   }
-  else
-  {
-    echo "Rejected";
-  }
+  
+  echo $position;
   return;
+}
+
+function addNewRecord($position)
+{
+  // Create connection
+  $conn = new mysqli('localhost', 'psychUser', 'N20t54TjPQKEmVhl', 'psych');
+
+  // Check connection
+  if ($conn->connect_error)
+  {
+      die("Connection failed: " . $conn->connect_error ."<br>");
+  }
+  
+  $firstName = generateFirstName();
+  $lastName = generateLastName();
+  $apptNum = generateRandomNumber();
+  
+  // Prepare sql statement
+  $stmt = $conn->prepare("INSERT INTO labelappointmentinfo (id, firstname, lastname, apptnum) VALUES (?,?,?,?)");
+  
+  if ($stmt==FALSE)
+  {
+  	echo "There is a problem with prepare <br>";
+  	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+  }
+  $stmt->bind_param("issi", $position, $firstName, $lastName, $apptNum);
+  
+  $stmt->execute();
 }
 
 function submitMemo($username, $position, $selected)
@@ -115,17 +143,7 @@ function submitMemo($username, $position, $selected)
   }
   else
   {
-    $sql = "SELECT * FROM labelappointmentinput";
-    $result = $conn->query($sql);
-    
-    if ($result->num_rows != 0)
-    {
-       $stmt = $conn->prepare("INSERT INTO labelappointmentinput (id, position, username, selected) VALUES (0,?,?,?)");
-    }
-    else
-    {
-       $stmt = $conn->prepare("INSERT INTO labelappointmentinput (position, username, selected) VALUES (?,?,?)");
-    }
+    $stmt = $conn->prepare("INSERT INTO labelappointmentinput (position, username, selected) VALUES (?,?,?)");
     
     if ($stmt==FALSE)
     {
@@ -147,7 +165,7 @@ function requestMemo($position)
 
   // Check connection
   if ($conn->connect_error)
-  {
+  { 
       die("Connection failed: " . $conn->connect_error ."<br>");
   }
   // Prepare sql statement
@@ -167,14 +185,14 @@ function requestMemo($position)
   if ($result->num_rows != 0)
   {
     $row = $result->fetch_assoc(); // Fetch a result row as an associative array
-    $response = json_encode($row);
+    echo json_encode($row);
   }
   else
   {
-    $response = "No Data";
+    addNewRecord($position);
+    echo requestMemo($position);
+    return;
   }
-  
-  echo $response;
   
   return;
 }

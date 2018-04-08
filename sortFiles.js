@@ -1,6 +1,9 @@
 var user;
 var tempGoal, goalStatus;
 
+var limitedGoal = 3;
+var limiterGoal = 10;
+
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
 
@@ -16,25 +19,20 @@ function checkPrivilege() {
 }
 
 function checkRestrictions() {
-  var sortFilesGoal;
+  var sortFilesGoal = sessionStorage.getItem("sortFilesGoal");
   var limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
 
-  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
-    tempGoal = sessionStorage.getItem("sortFilesGoal");
-    goalStatus = "initalGoals";
-  }
+  tempGoal = sortFilesGoal;
 
   for (let i = 0; i < limitArray.length; i++) {
-    if (limitArray[i].limiter == 2 && limitArray[i].status == "notMet") {
-      sortFilesGoal = sessionStorage.getItem("sortFilesGoal");
-      tempGoal = sortFilesGoal;
+    if (limitArray[i].limiter == 4 && limitArray[i].status == "notMet") {
+      tempGoal = limiterGoal;
       goalStatus = "limiterGoals";
       break;
     }
-    if (limitArray[i].limited == 2 && limitArray[i].status == "Met") {
-      sortFilesGoal = sessionStorage.getItem("sortFilesGoal");
-      tempGoal = Math.floor(sortFilesGoal * 0.3);
+    if (limitArray[i].limited == 4 && limitArray[i].status == "Met") {
+      tempGoal = limitedGoal;
       goalStatus = "limitedGoals";
       break;
     }
@@ -56,28 +54,20 @@ function loadData() {
     window.open("TestingHomepage.html", "_self", false);
   }
 
-  checkForCompletion();
+  checkForCompletion(position);
 
   document.getElementById("fileIdentifier").innerHTML = generateFileName();
 }
 
-function checkForCompletion() {
-  var goal;
+function checkForCompletion(position) {
+  var goal = tempGoal;
   var sortFilesGoal = sessionStorage.getItem("sortFilesGoal");
-  if (goalStatus == "initialGoals") {
-    goal = sortFilesGoal;
-  } else {
-    goal = tempGoal;
+
+  if (goalStatus != "limitedGoals") {
+    alert("Goal Complete");
   }
 
   if (position > goal) {
-    alert("goal complete");
-
-    if (goal >= sortFilesGoal) {
-      sessionStorage.setItem("sortFilesGoal", parseInt(sortFilesGoal) + 10);
-    } else {
-      sessionStorage.setItem("sortFilesGoal", parseInt(sortFilesGoal))
-    }
     if (goalStatus == "limiterGoals") {
       let limitArray = sessionStorage.getItem("limitors");
       limitArray = JSON.parse(limitArray);
@@ -131,6 +121,8 @@ function submitData() {
     return false;
   }
 
+  runSaveAnimation();
+
   temp = new Object();
   temp.username = user;
   temp.filename = fileName;
@@ -170,4 +162,18 @@ function confirmSave() {
   {
     alert('Caught Exception: ' + e.description);
   }
+}
+
+function runSaveAnimation() {
+  var wedge = document.getElementById("refreshing");
+
+  wedge.classList.remove("hidden");
+  wedge.classList.add("shown");
+
+  setTimeout(function () {
+    var wedge = document.getElementById("refreshing");
+
+    wedge.classList.remove("shown");
+    wedge.classList.add("hidden");
+  }, 600);
 }

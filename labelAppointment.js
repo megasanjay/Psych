@@ -1,5 +1,8 @@
-var user;
+var user, startPos;
 var tempGoal, goalStatus;
+
+var limitedGoal = 3;
+var limiterGoal = 10;
 
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
@@ -9,30 +12,31 @@ function checkPrivilege() {
     alert("Please log into your account.");
     window.open("Login.html", "_self", false); // Goes back to the login page
   }
+
+  startPos = sessionStorage.getItem("lastApptViewed");
+
+  if (startPos == undefined) {
+    startPos = 1;
+  }
+
   checkRestrictions();
   loadData();
 }
 
 function checkRestrictions() {
-  var labelApptGoal;
+  var labelApptGoal = sessionStorage.getItem("labelApptGoal");
   var limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
 
-  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
-    tempGoal = sessionStorage.getItem("labelApptGoal");
-    goalStatus = "initalGoals";
-  }
+  tempGoal = labelApptGoal;
 
   for (let i = 0; i < limitArray.length; i++) {
-    if (limitArray[i].limiter == 2 && limitArray[i].status == "notMet") {
-      labelApptGoal = sessionStorage.getItem("labelApptGoal");
-      tempGoal = labelApptGoal;
+    if (limitArray[i].limiter == 6 && limitArray[i].status == "notMet") {
       goalStatus = "limiterGoals";
       break;
     }
-    if (limitArray[i].limited == 2 && limitArray[i].status == "Met") {
-      labelApptGoal = sessionStorage.getItem("labelApptGoal");
-      tempGoal = Math.floor(labelApptGoal * 0.3);
+    if (limitArray[i].limited == 6 && limitArray[i].status == "Met") {
+      tempGoal = parseInt(startPos) + parseInt(limiterGoal);
       goalStatus = "limitedGoals";
       break;
     }
@@ -40,33 +44,33 @@ function checkRestrictions() {
 }
 
 function loadData() {
+  document.getElementById("labelValue").selectedIndex = 0;
+
   position = sessionStorage.getItem("lastApptViewed");
 
   if (position == undefined) {
-    position = 0;
+    position = 1;
     sessionStorage.setItem("lastApptViewed", position);
+    startPos = position;
   }
 
-  checkForCompletion();
+  checkForCompletion(position);
   requestData(position);
 }
 
-function checkForCompletion() {
-  var goal;
+function checkForCompletion(position) {
+  var goal = tempGoal;
   var labelApptGoal = sessionStorage.getItem("labelApptGoal");
-  if (goalStatus == "initialGoals") {
-    goal = labelApptGoal;
-  } else {
-    goal = tempGoal;
-  }
 
   if (position > goal) {
-    alert("goal complete");
-
-    if (goal >= labelApptGoal) {
-      sessionStorage.setItem("labelApptGoal", labelApptGoal + 3);
+    if (goalStatus == "limitedGoals") {
+      sessionStorage.setItem("labelApptGoal", parseInt(labelApptGoal) + parseInt(limitedGoal));
+    } else {
+      alert("Goal Complete");
+      sessionStorage.setItem("labelApptGoal", parseInt(labelApptGoal) + parseInt(limiterGoal));
     }
-    if (goalStatus = "limiterGoals") {
+
+    if (goalStatus == "limiterGoals") {
       let limitArray = sessionStorage.getItem("limitors");
       limitArray = JSON.parse(limitArray);
 
@@ -112,6 +116,8 @@ function submitData() {
     return;
   }
 
+  runSaveAnimation();
+
   temp = new Object();
   temp.position = position;
   temp.username = user;
@@ -152,7 +158,6 @@ function displayData() {
 
         if (response == "No Data") {
           alert("End of data");
-          sessionStorage.removeItem("lastApptViewed");
           window.open("TestingHomepage.html", "_self", false);
           return;
         }
@@ -163,7 +168,7 @@ function displayData() {
         document.getElementById("lastNameLabel").value = response.lastname;
         document.getElementById("apptNumLabel").value = response.apptnum;
       } else {
-        alert('There was a problem with the request.');
+        alert('There was a problem with request.');
       }
     }
     return 1;
@@ -182,10 +187,10 @@ function confirmMove() {
           alert("Selection out of bounds");
           return;
         } else {
-          requestData(position);
+          requestData(response);
         }
       } else {
-        alert('There was a problem with the request.');
+        alert('There was a problem with said request.');
       }
     }
     return 1;
@@ -209,6 +214,7 @@ function confirmSave() {
           alert("Something went wrong. Please try again in a few seconds");
         }
       } else {
+        alert(httpRequest.status);
         alert('There was a problem with the save.');
       }
     }
@@ -217,4 +223,18 @@ function confirmSave() {
   {
     alert('Caught Exception: ' + e.description);
   }
+}
+
+function runSaveAnimation() {
+  var wedge = document.getElementById("refreshing");
+
+  wedge.classList.remove("hidden");
+  wedge.classList.add("shown");
+
+  setTimeout(function () {
+    var wedge = document.getElementById("refreshing");
+
+    wedge.classList.remove("shown");
+    wedge.classList.add("hidden");
+  }, 600);
 }
