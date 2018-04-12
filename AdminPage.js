@@ -58,7 +58,7 @@ function loadRestrictionsTable() {
     return 1;
   } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
   {
-    alert('Caught Exception: ' + e.description);
+    alert('Caught Exception: loadRestrictionsTable' + e.description);
   }
 }
 
@@ -108,7 +108,7 @@ function loadCurrentParticipants() {
     return 1;
   } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
   {
-    alert('Caught Exception: ' + e.description);
+    alert('Caught Exception: loadCurrentParticipants ' + e.description);
   }
 }
 
@@ -160,7 +160,7 @@ function loadCurrentTask() {
     return 1;
   } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
   {
-    alert('Caught Exception: ' + e.description);
+    alert('Caught Exception: loadCurrentTask' + e.description);
   }
 }
 
@@ -423,7 +423,7 @@ function saveLoginChanges() {
     infoArray.push(JSON.stringify(temp));
   }
 
-  var requestURL = "http://localhost: 8888 / PsychPHP/AdminDetails.php";
+  var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.open('POST', requestURL);
   httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
