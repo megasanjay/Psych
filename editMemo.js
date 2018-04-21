@@ -1,11 +1,10 @@
 var user, startPos;
 var tempGoal, goalStatus;
 
-var limitedGoal = 1;
-var limiterGoal = 3;
-
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
+
+  tempGoal = sessionStorage.getItem("tempGoal");
 
   // Checks if user is logged in
   if (user == undefined) {
@@ -29,10 +28,11 @@ function checkRestrictions() {
   var limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
 
-  tempGoal = memoGoal;
-
   if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
-    goalStatus = "initalGoals";
+    goalStatus = "dayOneGoals";
+    return;
+  } else {
+    goalStatus = "restricted";
   }
 
   for (let i = 0; i < limitArray.length; i++) {
@@ -41,7 +41,7 @@ function checkRestrictions() {
       break;
     }
     if (limitArray[i].limited == 2 && limitArray[i].status == "Met") {
-      tempGoal = parseInt(startPos) + parseInt(limiterGoal);
+      //tempGoal = parseInt(startPos) + parseInt(limiterGoal);
       goalStatus = "limitedGoals";
       break;
     }
@@ -56,6 +56,7 @@ function loadMemo() {
     position = 1;
     sessionStorage.setItem("lastMemoViewed", position);
     startPos = position;
+    sessionStorage.setItem("memoGoal", tempGoal);
   }
 
   checkForCompletion(position);
@@ -63,15 +64,21 @@ function loadMemo() {
 }
 
 function checkForCompletion(position) {
-  var goal = tempGoal;
-  var memoGoal = sessionStorage.getItem("memoGoal");
+  var goal = sessionStorage.getItem("memoGoal");
 
-  if (position > goal) {
+  if (goalStatus == "dayOneGoals") {
+    return;
+  }
+
+  if (parseInt(position) > parseInt(goal)) {
+    sessionStorage.setItem("memoGoal", parseInt(goal) + parseInt(tempGoal));
+    sessionStorage.setItem("currentStatus", "goalMet");
+
     if (goalStatus == "limitedGoals") {
-      sessionStorage.setItem("memoGoal", parseInt(memoGoal) + parseInt(limitedGoal));
+      //sessionStorage.setItem("memoGoal", parseInt(memoGoal) + parseInt(limitedGoal));
     } else {
-      alert("Goal Complete");
-      sessionStorage.setItem("memoGoal", parseInt(memoGoal) + parseInt(limiterGoal));
+      alert("Goal Complete!");
+      //sessionStorage.setItem("memoGoal", parseInt(memoGoal) + parseInt(limiterGoal));
     }
 
     if (goalStatus == "limiterGoals") {

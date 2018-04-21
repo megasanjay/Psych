@@ -23,8 +23,6 @@ if (!empty($_POST))
     $position = $_POST["position"];
     $memo = $_POST["memo"];
     
-    $memo = $conn->real_escape_string($memo);
-    
     submitMemo($username, $position, $memo);
   }
 }
@@ -37,12 +35,15 @@ function submitMemo($username, $position, $memo)
 {
   // Create connection
   $conn = new mysqli('localhost', 'psychUser', 'N20t54TjPQKEmVhl', 'psych');
-
+  
   // Check connection
   if ($conn->connect_error)
   {
       die("Connection failed: " . $conn->connect_error ."<br>");
   }
+  
+  $memo = $conn->real_escape_string($memo);
+  
   // Prepare sql statement
   $stmt = $conn->prepare("SELECT * FROM memoinput WHERE memoID = ? AND username = ?");
   
@@ -58,7 +59,7 @@ function submitMemo($username, $position, $memo)
   
   if ($result->num_rows != 0)     // Results returned
   {
-    $stmt = $conn->prepare("UPDATE memoinput SET memoText = ? WHERE memoID = ? AND username = ?");
+    $stmt = $conn->prepare("UPDATE memoinput SET memotext = ? WHERE memoID = ? AND username = ?");
     
     if ($stmt==FALSE)
     {
@@ -74,7 +75,7 @@ function submitMemo($username, $position, $memo)
     $sql = "SELECT * FROM memoinput";
     $numResult = $conn->query($sql);
     
-    $stmt = $conn->prepare("INSERT INTO memoinput (memoID, username, memoText) VALUES (?,?,?)");
+    $stmt = $conn->prepare("INSERT INTO memoinput (memoID, username, memotext) VALUES (?,?,?)");
 
     if ($stmt==FALSE)
     {

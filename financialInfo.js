@@ -2,11 +2,10 @@ var hot;
 var hooks;
 var tempGoal, goalStatus;
 
-var limitedGoal = 3;
-var limiterGoal = 10;
-
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
+
+  tempGoal = sessionStorage.getItem("tempGoal");
 
   // Checks if user is logged in
   if (user == undefined) {
@@ -24,16 +23,19 @@ function checkRestrictions() {
   var limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
 
-  tempGoal = sessionStorage.getItem("financialGoal");
+  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
+    goalStatus = "dayOneGoals";
+    return;
+  } else {
+    goalStatus = "restricted";
+  }
 
   for (let i = 0; i < limitArray.length; i++) {
     if (limitArray[i].limiter == 1 && limitArray[i].status == "notMet") {
-      tempGoal = financialGoal;
       goalStatus = "limiterGoals";
       break;
     }
     if (limitArray[i].limited == 1 && limitArray[i].status == "Met") {
-      tempGoal = parseInt(financialGoal) - (limiterGoal - limitedGoal);
       goalStatus = "limitedGoals";
       break;
     }
@@ -42,7 +44,7 @@ function checkRestrictions() {
 
 function loadLastState() {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'></div>";
-  var requestURL = "http://csci130.xyz/Psych/AdminDetails.php";
+  var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
   httpRequest.open('POST', requestURL);
@@ -56,6 +58,17 @@ function loadTable() {
       if (httpRequest.status === 200) {
         var response = httpRequest.responseText;
         response = JSON.parse(response);
+
+        var tempLength = response.length;
+
+        if (tempLength >= sessionStorage.getItem("financialGoal")) {
+          if (tempLength == 1) {
+            tempLength = 0;
+          }
+          sessionStorage.setItem("financialGoal", parseInt(tempLength) + parseInt(tempGoal));
+          //sessionStorage.setItem("currentStatus", "goalUnmet");
+        }
+
         loadGrid(response);
         registerHooks();
       } else {
@@ -95,8 +108,11 @@ function sendToServer(infoArray) {
 function checkForCompletion() {
   // rework code for row count
   let dataCount, rowCount;
-  var goal = tempGoal;
-  var financialGoal = sessionStorage.getItem("financialGoal");
+  var goal = sessionStorage.getItem("financialGoal");
+
+  if (goalStatus == "dayOneGoals") {
+    return;
+  }
 
   rowCount = 0;
   for (let i = 0; i < hot.countRows(); i++) {
@@ -111,12 +127,15 @@ function checkForCompletion() {
     }
   }
 
-  if (rowCount >= goal) {
+  if (parseInt(rowCount) >= parseInt(goal)) {
+    sessionStorage.setItem("financialGoal", parseInt(goal) + parseInt(tempGoal));
+    sessionStorage.setItem("currentStatus", "goalMet");
+
     if (goalStatus == "limitedGoals") {
-      sessionStorage.setItem("financialGoal", parseInt(financialGoal) + parseInt(limitedGoal));
+      //sessionStorage.setItem("financialGoal", parseInt(financialGoal) + parseInt(limitedGoal));
     } else {
       alert("Goal Complete");
-      sessionStorage.setItem("financialGoal", parseInt(financialGoal) + parseInt(limiterGoal));
+      //sessionStorage.setItem("financialGoal", parseInt(financialGoal) + parseInt(limiterGoal));
     }
 
     //recheck goals;

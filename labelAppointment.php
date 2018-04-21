@@ -42,7 +42,7 @@ else
 
 function checkMove($position)
 {
-  if ($position < 0)
+  if ($position <= 0)
   {
     echo "Rejected";
     return;
@@ -72,6 +72,8 @@ function checkMove($position)
   {
     addNewRecord($position);
   }
+  
+  $conn->close();
   
   echo $position;
   return;
@@ -103,6 +105,8 @@ function addNewRecord($position)
   $stmt->bind_param("issi", $position, $firstName, $lastName, $apptNum);
   
   $stmt->execute();
+  $conn->close();
+  return;
 }
 
 function submitMemo($username, $position, $selected)

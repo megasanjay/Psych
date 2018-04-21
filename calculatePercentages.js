@@ -2,11 +2,10 @@ var hot, hooks;
 var setter = true;
 var tempGoal, goalStatus;
 
-var limitedGoal = 3;
-var limiterGoal = 10;
-
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
+
+  tempGoal = sessionStorage.getItem("tempGoal");
 
   // Checks if user is logged in
   if (user == undefined) {
@@ -23,16 +22,19 @@ function checkRestrictions() {
   var limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
 
-  tempGoal = sessionStorage.getItem("percentageGoal");
+  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
+    goalStatus = "dayOneGoals";
+    return;
+  } else {
+    goalStatus = "restricted";
+  }
 
   for (let i = 0; i < limitArray.length; i++) {
     if (limitArray[i].limiter == 1 && limitArray[i].status == "notMet") {
-      tempGoal = percentageGoal;
       goalStatus = "limiterGoals";
       break;
     }
     if (limitArray[i].limited == 1 && limitArray[i].status == "Met") {
-      tempGoal = parseInt(percentageGoal) - (limiterGoal - limitedGoal);
       goalStatus = "limitedGoals";
       break;
     }
@@ -55,6 +57,17 @@ function loadTable() {
       if (httpRequest.status === 200) {
         var response = httpRequest.responseText;
         response = JSON.parse(response);
+
+        var tempLength = response.length;
+
+        if (tempLength >= sessionStorage.getItem("percentageGoal")) {
+          if (tempLength == 1) {
+            tempLength = 0;
+          }
+          sessionStorage.setItem("percentageGoal", parseInt(tempLength) + parseInt(tempGoal));
+          //sessionStorage.setItem("currentStatus", "goalUnmet");
+        }
+
         loadGrid(response);
         registerHooks();
       } else {
@@ -81,6 +94,7 @@ function reportState() {
     temp.recordUsername = sessionStorage.getItem("currentUser");
     infoArray.push(JSON.stringify(temp));
   }
+
   sendToServer(infoArray);
 }
 
@@ -95,8 +109,11 @@ function sendToServer(infoArray) {
 function checkForCompletion() {
   // rework code for row count
   let dataCount, rowCount;
-  var goal = tempGoal;
-  var percentageGoal = sessionStorage.getItem("percentageGoal");
+  var goal = sessionStorage.getItem("percentageGoal");
+
+  if (goalStatus == "dayOneGoals") {
+    return;
+  }
 
   rowCount = 0;
   for (let i = 0; i < hot.countRows(); i++) {
@@ -111,12 +128,15 @@ function checkForCompletion() {
     }
   }
 
-  if (rowCount >= goal) {
+  if (parseInt(rowCount) >= parseInt(goal)) {
+    sessionStorage.setItem("percentageGoal", parseInt(goal) + parseInt(tempGoal));
+    sessionStorage.setItem("currentStatus", "goalMet");
+
     if (goalStatus == "limitedGoals") {
-      sessionStorage.setItem("percentageGoal", parseInt(percentageGoal) + parseInt(limitedGoal));
+      //sessionStorage.setItem("percentageGoal", parseInt(percentageGoal) + parseInt(limitedGoal));
     } else {
       alert("Goal Complete");
-      sessionStorage.setItem("percentageGoal", parseInt(percentageGoal) + parseInt(limiterGoal));
+      //sessionStorage.setItem("percentageGoal", parseInt(percentageGoal) + parseInt(limiterGoal));
     }
 
     if (goalStatus == "limiterGoals") {

@@ -73,43 +73,49 @@ if (!empty($_POST))
       $recordPassword = $arrayObject->recordPassword;
       $recordEmail = $arrayObject->recordEmail;
       $recordAdmin = $arrayObject->recordAdmin;
+      $recordFinancial = $arrayObject->recordFinancial;
+      $recordMemo = $arrayObject->recordMemo;
+      $recordCrossCheck = $arrayObject->recordCrossCheck;
+      $recordSortFiles = $arrayObject->recordSortFiles;
+      $recordPercentage = $arrayObject->recordPercentage;
+      $recordAppointments = $arrayObject->recordAppointments;
     
-    $stmt = $conn->prepare("SELECT * FROM logininfo WHERE username = ?");
-    
-    if ($stmt == FALSE)
-    {
-      echo "There is a problem with prepare <br>";
-      echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
-    }
-    $stmt->bind_param("s", $recordUsername);
-    
-    $stmt->execute();               // Run query
-    $result = $stmt->get_result();  // query result
-    
-    if ($result->num_rows != 0)     // Results returned
-    {
-      $stmt = $conn->prepare("UPDATE logininfo SET password = ?, emailaddress = ?, admin = ? WHERE username = ?");
-      
-      if ($stmt==FALSE)
+      $stmt = $conn->prepare("SELECT * FROM logininfo WHERE username = ?");
+
+      if ($stmt == FALSE)
       {
-      	echo "There is a problem with prepare <br>";
-      	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+        echo "There is a problem with prepare <br>";
+        echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
       }
-      $stmt->bind_param("ssis", $recordPassword, $recordEmail, $recordAdmin, $recordUsername);
-      $stmt->execute(); // Run query
-    }
-    else
-    {
-      $stmt = $conn->prepare("INSERT INTO logininfo (username, password, emailaddress, admin) VALUES (?, ?, ?, ?)");
-      
-      if ($stmt==FALSE)
+      $stmt->bind_param("s", $recordUsername);
+
+      $stmt->execute();               // Run query
+      $result = $stmt->get_result();  // query result
+    
+      if ($result->num_rows != 0)     // Results returned
       {
-      	echo "There is a problem with prepare <br>";
-      	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+        $stmt = $conn->prepare("UPDATE logininfo SET password = ?, emailaddress = ?, admin = ?, financial = ?, memo = ? , crosscheck = ? , sortfiles = ?, percentage = ?, appointments = ? WHERE username = ?");
+
+        if ($stmt==FALSE)
+        {
+          echo "There is a problem with prepare <br>";
+          echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+        }
+        $stmt->bind_param("ssiiiiiiis", $recordPassword, $recordEmail, $recordAdmin, $recordFinancial, $recordMemo, $recordCrossCheck, $recordSortFiles, $recordPercentage, $recordAppointments, $recordUsername);
+        $stmt->execute(); // Run query
       }
-      $stmt->bind_param("sssi", $recordUsername, $recordPassword, $recordEmail, $recordAdmin);
-      $stmt->execute(); // Run query
-    }
+      else
+      {
+        $stmt = $conn->prepare("INSERT INTO logininfo (username, password, emailaddress, admin, financial, memo, crosscheck, sortfiles, percentage, appointments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        if ($stmt==FALSE)
+        {
+          echo "There is a problem with prepare <br>";
+          echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+        }
+        $stmt->bind_param("sssiiiiiii", $recordUsername, $recordPassword, $recordEmail, $recordAdmin, $recordFinancial, $recordMemo, $recordCrossCheck, $recordSortFiles, $recordPercentage, $recordAppointments);
+        $stmt->execute(); // Run query
+      }
     }
     return;
   }
@@ -126,7 +132,6 @@ if (!empty($_POST))
       $recordLimiter = $arrayObject->recordLimiter;
       $recordLimited = $arrayObject->recordLimited;
       $recordDay = $arrayObject->recordDay;
-    }
     
     $stmt = $conn->prepare("SELECT * FROM restrictions WHERE username = ? AND limiter = ?");
     
@@ -164,7 +169,7 @@ if (!empty($_POST))
       $stmt->bind_param("siii", $recordUsername, $recordLimiter, $recordLimited, $recordDay);
       $stmt->execute(); // Run query
     }
-    
+    }
     return;
   }
   
@@ -205,7 +210,7 @@ if (!empty($_POST))
     {
       if ($row["username"] != 'robbyn')
       {
-        $rows[] = array("username"=>$row["username"],"password"=>$row["password"],"emailaddress"=>$row["emailaddress"]); // Put the data into an associative array
+        $rows[] = array("username"=>$row["username"], "password"=>$row["password"], "emailaddress"=>$row["emailaddress"], "financial"=>$row["financial"], "memo"=>$row["memo"], "crosscheck"=>$row["crosscheck"], "sortfiles"=>$row["sortfiles"], "percentage"=>$row["percentage"], "appointments"=>$row["appointments"]); // Put the data into an associative array
       }
     }
     
@@ -217,7 +222,7 @@ if (!empty($_POST))
     }
     else
     {
-      $temp[] = array("", "", "");
+      $temp[] = array("", "", "", "", "", "", "", "", "");
       echo json_encode($temp);
       return;
     }
@@ -359,26 +364,18 @@ if (!empty($_POST))
   {
     $sql = "SELECT * FROM memoinput WHERE username = '{$userName}' ORDER BY id DESC LIMIT 1";        
     $result = mysqli_query($conn2,$sql);
-
-    $rows = array();
     
-    while($row = mysqli_fetch_assoc($result))
+    if ($result->num_rows != 0)
     {
-      $rows[] = array($row["data1"],$row["data2"]); // Put the data into an associative array
-    }
-    
-    if (count($rows) > 0)          // Results returned increment comment ID value for new comment
-    {
-      echo json_encode($rows);    // Json encode the data to send back
-      $conn->close();
-      return;
+      $row = mysqli_fetch_assoc($result);
+      $row = $row["memotext"];
     }
     else
     {
-      $temp[] = array("", "");
-      echo json_encode($temp);
-      return;
+      $row = "No Text";
     }
+    echo $row;
+    return;
   }
   
   if ($action == 'labelAppointment')
@@ -401,7 +398,6 @@ if (!empty($_POST))
     }
     else
     {
-      echo "[]";
       $temp[] = array("", "", "", "");
       echo json_encode($temp);
       return;

@@ -1,11 +1,10 @@
 var user, startPos;
 var tempGoal, goalStatus;
 
-var limitedGoal = 3;
-var limiterGoal = 10;
-
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
+
+  tempGoal = sessionStorage.getItem("tempGoal");
 
   // Checks if user is logged in
   if (user == undefined) {
@@ -28,7 +27,12 @@ function checkRestrictions() {
   var limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
 
-  tempGoal = labelApptGoal;
+  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
+    goalStatus = "dayOneGoals";
+    return;
+  } else {
+    goalStatus = "restricted";
+  }
 
   for (let i = 0; i < limitArray.length; i++) {
     if (limitArray[i].limiter == 6 && limitArray[i].status == "notMet") {
@@ -36,7 +40,7 @@ function checkRestrictions() {
       break;
     }
     if (limitArray[i].limited == 6 && limitArray[i].status == "Met") {
-      tempGoal = parseInt(startPos) + parseInt(limiterGoal);
+      //tempGoal = parseInt(startPos) + parseInt(limiterGoal);
       goalStatus = "limitedGoals";
       break;
     }
@@ -52,6 +56,7 @@ function loadData() {
     position = 1;
     sessionStorage.setItem("lastApptViewed", position);
     startPos = position;
+    sessionStorage.setItem("labelApptGoal", tempGoal);
   }
 
   checkForCompletion(position);
@@ -59,15 +64,24 @@ function loadData() {
 }
 
 function checkForCompletion(position) {
-  var goal = tempGoal;
-  var labelApptGoal = sessionStorage.getItem("labelApptGoal");
+  var goal = sessionStorage.getItem("labelApptGoal");
 
-  if (position > goal) {
+  if (goalStatus == "dayOneGoals") {
+    return;
+  }
+
+  console.log("position" + position);
+  console.log("goal" + goal);
+
+  if (parseInt(position) > parseInt(goal)) {
+    sessionStorage.setItem("labelApptGoal", parseInt(goal) + parseInt(tempGoal));
+    sessionStorage.setItem("currentStatus", "goalMet");
+
     if (goalStatus == "limitedGoals") {
-      sessionStorage.setItem("labelApptGoal", parseInt(labelApptGoal) + parseInt(limitedGoal));
+      //sessionStorage.setItem("labelApptGoal", parseInt(labelApptGoal) + parseInt(limitedGoal));
     } else {
       alert("Goal Complete");
-      sessionStorage.setItem("labelApptGoal", parseInt(labelApptGoal) + parseInt(limiterGoal));
+      //sessionStorage.setItem("labelApptGoal", parseInt(labelApptGoal) + parseInt(limiterGoal));
     }
 
     if (goalStatus == "limiterGoals") {
@@ -187,6 +201,7 @@ function confirmMove() {
           alert("Selection out of bounds");
           return;
         } else {
+          sessionStorage.setItem("lastApptViewed", response);
           requestData(response);
         }
       } else {

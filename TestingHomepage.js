@@ -1,4 +1,5 @@
 var user;
+var taskNumber;
 
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
@@ -42,9 +43,67 @@ function task(taskNum) {
     return;
   };
 
+  taskNumber = taskNum;
+  getGoal(taskNum);
+}
+
+function getGoal(taskNum) {
+  var requestURL = "http://localhost:8888/PsychPHP/Tester.php";
+  httpRequest = new XMLHttpRequest();
+  httpRequest.onreadystatechange = alertGetGoal;
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
   switch (taskNum) {
     case 1:
-      //sessionStorage.setItem("variablename", variable value);
+      httpRequest.send('userName=' + encodeURIComponent(user) + "&action=" + encodeURIComponent("getGoal") + "&field=" + encodeURIComponent("financial"));
+      break;
+    case 2:
+      httpRequest.send('userName=' + encodeURIComponent(user) + "&action=" + encodeURIComponent("getGoal") + "&field=" + encodeURIComponent("memo"));
+      break;
+    case 3:
+      httpRequest.send('userName=' + encodeURIComponent(user) + "&action=" + encodeURIComponent("getGoal") + "&field=" + encodeURIComponent("crosscheck"));
+      break;
+    case 4:
+      httpRequest.send('userName=' + encodeURIComponent(user) + "&action=" + encodeURIComponent("getGoal") + "&field=" + encodeURIComponent("sortfiles"));
+      break;
+    case 5:
+      httpRequest.send('userName=' + encodeURIComponent(user) + "&action=" + encodeURIComponent("getGoal") + "&field=" + encodeURIComponent("percentage"));
+      break;
+    case 6:
+      httpRequest.send('userName=' + encodeURIComponent(user) + "&action=" + encodeURIComponent("getGoal") + "&field=" + encodeURIComponent("appointments"));
+      break;
+    default:
+      break;
+  }
+}
+
+function alertGetGoal() {
+  try {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+      if (httpRequest.status === 200) {
+        var response = httpRequest.responseText;
+
+        if (response == "None") {
+          alert("No goals have been set. Please contact the administrator.");
+        } else {
+          sessionStorage.setItem("tempGoal", response);
+          moveToPage(taskNumber);
+        }
+      } else {
+        alert('There was a problem with the request.');
+      }
+    }
+    return 1;
+  } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
+  {
+    alert('Caught Exception: ' + e.description);
+  }
+}
+
+function moveToPage(taskNum) {
+  switch (taskNum) {
+    case 1:
       window.open("financialInfo.html", "_self", false);
       break;
     case 2:
@@ -88,6 +147,13 @@ function dayOneGoals() {
   setfunctionalGoals();
   sessionStorage.setItem("day", 1);
   sessionStorage.setItem("currentStatus", "dayOneTesting");
+
+  sessionStorage.setItem("financialGoal", 99999999999);
+  sessionStorage.setItem("memoGoal", 99999999999);
+  sessionStorage.setItem("crossCheckGoal", 99999999999);
+  sessionStorage.setItem("sortFilesGoal", 99999999999);
+  sessionStorage.setItem("percentageGoal", 99999999999);
+  sessionStorage.setItem("labelApptGoal", 99999999999);
 }
 
 function restrictControls(response) {
@@ -108,11 +174,11 @@ function restrictControls(response) {
 }
 
 function setfunctionalGoals() {
-  sessionStorage.setItem("financialGoal", 10);
+  sessionStorage.setItem("financialGoal", 0);
   sessionStorage.setItem("memoGoal", 3);
-  sessionStorage.setItem("crossCheckGoal", 10);
+  sessionStorage.setItem("crossCheckGoal", 0);
   sessionStorage.setItem("sortFilesGoal", 10);
-  sessionStorage.setItem("percentageGoal", 10);
+  sessionStorage.setItem("percentageGoal", 0);
   sessionStorage.setItem("labelApptGoal", 3);
 }
 

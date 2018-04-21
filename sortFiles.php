@@ -39,7 +39,7 @@ function submitFile($username, $filename, $selected)
       die("Connection failed: " . $conn->connect_error ."<br>");
   }
   // Prepare sql statement
-  $sql = "SELECT * FROM sortedfiles ";
+  $sql = "SELECT * FROM sortedfiles";
   $result = $conn->query($sql);
 
   if ($result->num_rows == 0)

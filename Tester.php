@@ -20,6 +20,35 @@ if (!empty($_POST))
     die("Connection failed: " . $conn->connect_error ."<br>");
   }
   
+  if ($action == 'getGoal')
+  {
+    $field = $_POST['field'];
+    
+    $stmt = $conn->prepare("SELECT * FROM logininfo WHERE username = ?");
+    if ($stmt==FALSE)
+    {
+      echo "There is a problem with prepare <br>";
+      echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+    }
+    $stmt->bind_param("s", $userName);
+    
+    $stmt->execute();               // Run query
+    $result = $stmt->get_result();  // query result
+    
+    if ($result->num_rows != 0)     // Results returned
+    {
+      $row = $result->fetch_assoc(); // Fetch a result row as an associative array
+      $response = $row[$field];
+    }
+    else
+    {
+      $response = "None";
+    }
+    
+    echo $response;
+    return;
+  }
+  
   if ($action == 'setCurrentState')
   {
     $task = $_POST['task'];
@@ -66,9 +95,23 @@ if (!empty($_POST))
   $result = mysqli_query($conn2,$sql);
   $rows = array();
   
-  while($row = mysqli_fetch_assoc($result))
+   if ($result->num_rows != 0)     // Results returned
+   {
+     while($row = mysqli_fetch_assoc($result))
+    {
+      $safetyCheck = $row["day"];
+
+      if ($safetyCheck == NULL || $safetyCheck == 0)
+      {
+        $safetyCheck = 1;
+      }
+
+      $rows[] = array("limiter"=>$row["limiter"],"limited"=>$row["limited"], "day"=>$safetyCheck); // Put the data into an associative array
+    }
+   }
+  else
   {
-    $rows[] = array("limiter"=>$row["limiter"],"limited"=>$row["limited"], "day"=>$row["day"]); // Put the data into an associative array
+    $rows[] = array("limiter"=>0,"limited"=>0,"day"=>1); // Put the data into an associative array
   }
   
   echo json_encode($rows);

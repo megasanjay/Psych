@@ -1,11 +1,10 @@
 var user;
 var tempGoal, goalStatus;
 
-var limitedGoal = 3;
-var limiterGoal = 10;
-
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
+
+  tempGoal = sessionStorage.getItem("tempGoal");
 
   // Checks if user is logged in
   if (user == undefined) {
@@ -23,16 +22,19 @@ function checkRestrictions() {
   var limitArray = sessionStorage.getItem("limitors");
   limitArray = JSON.parse(limitArray);
 
-  tempGoal = sortFilesGoal;
+  if (sessionStorage.getItem("currentStatus") == "dayOneTesting") {
+    goalStatus = "dayOneGoals";
+    return;
+  } else {
+    goalStatus = "restricted";
+  }
 
   for (let i = 0; i < limitArray.length; i++) {
     if (limitArray[i].limiter == 4 && limitArray[i].status == "notMet") {
-      tempGoal = limiterGoal;
       goalStatus = "limiterGoals";
       break;
     }
     if (limitArray[i].limited == 4 && limitArray[i].status == "Met") {
-      tempGoal = limitedGoal;
       goalStatus = "limitedGoals";
       break;
     }
@@ -40,34 +42,34 @@ function checkRestrictions() {
 }
 
 function loadData() {
-  goalState = sessionStorage.getItem("sortFilesGoal");
   position = sessionStorage.getItem("filesSorted");
 
   if (position == undefined) {
     position = 0;
     sessionStorage.setItem("filesSorted", position);
-  }
-
-  if (position > goalState) {
-    alert("goal complete");
-    sessionStorage.setItem("filesSorted", 0);
-    window.open("TestingHomepage.html", "_self", false);
+    sessionStorage.setItem("sortFilesGoal", tempGoal);
   }
 
   checkForCompletion(position);
 
   document.getElementById("fileIdentifier").innerHTML = generateFileName();
+
+  document.getElementById("sortFile").selectedIndex = 0;
 }
 
 function checkForCompletion(position) {
-  var goal = tempGoal;
-  var sortFilesGoal = sessionStorage.getItem("sortFilesGoal");
+  var goal = sessionStorage.getItem("sortFilesGoal");
 
-  if (goalStatus != "limitedGoals") {
-    alert("Goal Complete");
+  if (goalStatus == "dayOneGoals") {
+    return;
   }
 
-  if (position > goal) {
+  if (parseInt(position) >= parseInt(goal)) {
+    sessionStorage.removeItem("filesSorted");
+    if (goalStatus != "limitedGoals") {
+      alert("Goal Complete!");
+    }
+
     if (goalStatus == "limiterGoals") {
       let limitArray = sessionStorage.getItem("limitors");
       limitArray = JSON.parse(limitArray);
@@ -128,7 +130,6 @@ function submitData() {
   temp.filename = fileName;
   temp.selected = content;
   sendData(temp);
-  //return true;
 }
 
 function sendData(temp) {

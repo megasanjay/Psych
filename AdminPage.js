@@ -130,7 +130,6 @@ function getTaskNum(username, tasknum) {
     autoRefresh();
     currentInterval = setInterval(requestTask, 3000, username);
   }
-
 }
 
 function requestTask(username) {
@@ -241,7 +240,7 @@ function loadMemoText() {
     return 1;
   } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
   {
-    alert('Caught Exception: ' + e.description);
+    alert('Caught Exception: loadMemoText' + e.description);
   }
 }
 
@@ -294,7 +293,7 @@ function loadTable() {
     return 1;
   } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
   {
-    alert('Caught Exception: ' + e.description);
+    alert('Caught Exception: loadTable -' + e.description);
   }
 }
 
@@ -349,10 +348,10 @@ function loadThirdGrid(response) {
     rowHeaders: true,
     minCols: 0,
     minRows: 0,
-    startCols: 3,
+    startCols: 9,
     minSpareRows: 2,
     columnSorting: false,
-    colHeaders: ['Username', 'Password', 'Email Address'],
+    colHeaders: ['Username', 'Password', 'Email Address', 'Financial', 'Memo', 'X-Check', 'Sort Files', 'Percentages', 'Appointments'],
     contextMenu: true,
     fillHandle: {
       autoInsertRow: false,
@@ -420,6 +419,12 @@ function saveLoginChanges() {
     temp.recordPassword = hottest.getDataAtCell(i, 1);
     temp.recordEmail = hottest.getDataAtCell(i, 2);
     temp.recordAdmin = 0;
+    temp.recordFinancial = hottest.getDataAtCell(i, 3);
+    temp.recordMemo = hottest.getDataAtCell(i, 4);
+    temp.recordCrossCheck = hottest.getDataAtCell(i, 5);
+    temp.recordSortFiles = hottest.getDataAtCell(i, 6);
+    temp.recordPercentage = hottest.getDataAtCell(i, 7);
+    temp.recordAppointments = hottest.getDataAtCell(i, 8);
     infoArray.push(JSON.stringify(temp));
   }
 
@@ -443,7 +448,7 @@ function testFunc() {
     return 1;
   } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
   {
-    alert('Caught Exception: ' + e.description);
+    alert('Caught Exception: testFunc -' + e.description);
   }
 }
 
