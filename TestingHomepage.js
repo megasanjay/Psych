@@ -10,13 +10,107 @@ function checkPrivilege() {
     window.open("Login.html", "_self", false); // Goes back to the login page
   }
 
-  var currentStatus = sessionStorage.getItem("currentStatus");
+  var loadState = sessionStorage.getItem("loadState");
 
-  if (currentStatus == undefined) {
-    sessionStorage.setItem("currentStatus", "loadedRestrictions");
+  if (loadState == undefined) {
     sessionStorage.setItem("limitors", "[]");
     checkRestrictions();
   }
+
+  styleButtons(loadState);
+}
+
+function styleButtons(loadState) {
+  if (loadState == "noRestrictions") {
+    var temp = document.getElementsByClassName("shadow");
+
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].classList.remove("yellow");
+      temp[i].classList.remove("purple");
+      temp[i].classList.add("blue");
+    }
+  }
+
+  if (loadState == "restrictionsPresent") {
+    let limitArray = sessionStorage.getItem("limitors");
+    limitArray = JSON.parse(limitArray);
+    for (let i = 0; i < limitArray.length; i++) {
+      if (limitArray[i].limited == 1 && limitArray[i].status == "notMet") {
+        limitedNotMetColor("financial");
+      }
+      if (limitArray[i].limited == 2 && limitArray[i].status == "notMet") {
+        limitedNotMetColor("memo");
+      }
+      if (limitArray[i].limited == 3 && limitArray[i].status == "notMet") {
+        limitedNotMetColor("crosscheck");
+      }
+      if (limitArray[i].limited == 4 && limitArray[i].status == "notMet") {
+        console.log('asd');
+        limitedNotMetColor("sort");
+      }
+      if (limitArray[i].limited == 5 && limitArray[i].status == "notMet") {
+        limitedNotMetColor("percentage");
+      }
+      if (limitArray[i].limited == 6 && limitArray[i].status == "notMet") {
+        limitedNotMetColor("appointment");
+      }
+      if (limitArray[i].limited == 1 && limitArray[i].status == "Met") {
+        limitedMetColor("financial");
+      }
+      if (limitArray[i].limited == 2 && limitArray[i].status == "Met") {
+        limitedMetColor("memo");
+      }
+      if (limitArray[i].limited == 3 && limitArray[i].status == "Met") {
+        limitedMetColor("crosscheck");
+      }
+      if (limitArray[i].limited == 4 && limitArray[i].status == "Met") {
+        limitedMetColor("sort");
+      }
+      if (limitArray[i].limited == 5 && limitArray[i].status == "Met") {
+        limitedMetColor("percentage");
+      }
+      if (limitArray[i].limited == 6 && limitArray[i].status == "Met") {
+        limitedMetColor("appointment");
+      }
+      if (limitArray[i].limiter == 1) {
+        limiterColor("financial");
+      }
+      if (limitArray[i].limiter == 2) {
+        limiterColor("memo");
+      }
+      if (limitArray[i].limiter == 3) {
+        limiterColor("crosscheck");
+      }
+      if (limitArray[i].limiter == 4) {
+        limiterColor("sort");
+      }
+      if (limitArray[i].limiter == 5) {
+        limiterColor("percentage");
+      }
+      if (limitArray[i].limiter == 6) {
+        limiterColor("appointment");
+      }
+    }
+    return true;
+  }
+}
+
+function limitedNotMetColor(name) {
+  document.getElementById(name).classList.remove("blue");
+  document.getElementById(name).classList.remove("yellow");
+  document.getElementById(name).classList.add("purple");
+}
+
+function limitedMetColor(name) {
+  document.getElementById(name).classList.add("blue");
+  document.getElementById(name).classList.remove("yellow");
+  document.getElementById(name).classList.remove("purple");
+}
+
+function limiterColor(name) {
+  document.getElementById(name).classList.remove("blue");
+  document.getElementById(name).classList.add("yellow");
+  document.getElementById(name).classList.remove("purple");
 }
 
 function checkRestrictions() {
@@ -166,14 +260,15 @@ function restrictControls(response) {
       limiter = restriction.limiter;
       limited = restriction.limited;
       setGoals(limiter, limited);
-
-      //document.getElementById(limited).enabled = false;
     }
   }
+  sessionStorage.setItem("loadState", "restrictionsPresent");
+  styleButtons(sessionStorage.getItem("loadState"));
   setfunctionalGoals();
 }
 
 function setfunctionalGoals() {
+  // add code to make button dissappear here or in the else above
   sessionStorage.setItem("financialGoal", 0);
   sessionStorage.setItem("memoGoal", 3);
   sessionStorage.setItem("crossCheckGoal", 0);
@@ -210,10 +305,11 @@ function imposeRestrictions() {
     if (httpRequest.readyState === XMLHttpRequest.DONE) {
       if (httpRequest.status === 200) {
         var response = httpRequest.responseText;
-
         if (response == "None") {
+          sessionStorage.setItem("loadState", "noRestrictions");
           resetAllButtons();
         } else {
+          sessionStorage.setItem("loadState", "loadedRestrictions");
           response = JSON.parse(response);
           restrictControls(response);
         }

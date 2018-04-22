@@ -64,6 +64,9 @@ function checkForCompletion(position) {
     return;
   }
 
+  console.log(position);
+  console.log(goal);
+
   if (parseInt(position) >= parseInt(goal)) {
     sessionStorage.removeItem("filesSorted");
     if (goalStatus != "limitedGoals") {
