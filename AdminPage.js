@@ -1,5 +1,5 @@
-var hot, hotter, hottest, hooks;
-var currentInterval;
+var hot, hotter, hottest, tooHot, hooks;
+var currentInterval = [];
 var user;
 var columnHeaders;
 
@@ -112,23 +112,90 @@ function loadCurrentParticipants() {
   }
 }
 
+function forceRefresh() {
+  var tempUserName;
+  var elements = document.getElementsByClassName("active");
+
+  if (elements.length != 1) {
+    alert("No user has been selected.");
+    return;
+  } else {
+    tempUserName = elements[0].innerHTML;
+  }
+
+  var temp = confirm("This will force a refresh of the User's screen");
+
+  if (temp == false) {
+    return;
+  }
+
+  var requestURL = "http://localhost:8888/PsychPHP/Tester.php";
+  httpRequest = new XMLHttpRequest()
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  httpRequest.send('userName=' + encodeURIComponent("admin") + "&endUser=" + encodeURIComponent(tempUserName) + "&action=" + encodeURIComponent("forceRefresh"));
+
+  alert("Refresh command sent.");
+}
+
 function insertParticipant(username, tasknum) {
   //alert(adding);
   unorderedlist = document.getElementById("participantsList");
-  listItem = "<li><button onclick=\"getTaskNum('" + username + "'," + tasknum + ")\">" + username + "</button></li>";
+  listItem = "<li><button class='btn' onclick=\"getTaskNum('" + username + "'," + tasknum + ")\">" + username + "</button></li>";
   temp = unorderedlist.innerHTML;
   unorderedlist.innerHTML = temp + listItem;
 }
 
 function getTaskNum(username, tasknum) {
-  currentInterval = clearInterval(currentInterval);
+  for (let i = 0; i < currentInterval.length; i++) {
+    clearInterval(currentInterval[i]);
+  }
+
   user = username;
+
+  var temp = document.getElementsByClassName("active");
+
+  for (let i = 0; i < temp.length; i++) {
+    temp[i].classList.remove("active");
+  }
+
+  event.srcElement.classList.add("active");
 
   requestTask(username);
 
   if (document.getElementById("autoRefreshCheckBox").checked == true) {
     autoRefresh();
-    currentInterval = setInterval(requestTask, 3000, username);
+    for (let i = 0; i < currentInterval.length; i++) {
+      clearInterval(currentInterval[i]);
+    }
+    var temp = setInterval(requestTask, 3000, username);
+    currentInterval.push(temp);
+  }
+}
+
+function requestGoals(user) {
+  var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
+  xhttpRequest = new XMLHttpRequest()
+  xhttpRequest.onreadystatechange = loadGoals;
+  xhttpRequest.open('POST', requestURL);
+  xhttpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhttpRequest.send('userName=' + encodeURIComponent("admin") + '&user=' + encodeURIComponent(user) + "&action=" + encodeURIComponent("requestGoals"));
+}
+
+function loadGoals() {
+  try {
+    if (xhttpRequest.readyState === XMLHttpRequest.DONE) {
+      if (xhttpRequest.status === 200) {
+        var response = xhttpRequest.responseText;
+        response = JSON.parse(response);
+        loadGoalsTable(response);
+      } else {
+        alert('There was a problem with the request.');
+      }
+    }
+    return 1;
+  } catch (e) {
+    alert('Caught Exception: loadGoals' + e.description);
   }
 }
 
@@ -139,6 +206,7 @@ function requestTask(username) {
   httpRequest.open('POST', requestURL);
   httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   httpRequest.send('userName=' + encodeURIComponent(username) + "&action=" + encodeURIComponent("requestTask"));
+  requestGoals(username);
 }
 
 function loadCurrentTask() {
@@ -157,8 +225,7 @@ function loadCurrentTask() {
       }
     }
     return 1;
-  } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
-  {
+  } catch (e) {
     alert('Caught Exception: loadCurrentTask' + e.description);
   }
 }
@@ -168,32 +235,26 @@ function viewLiveFeed(username, tasknum) {
   if (tasknum == 1) {
     document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
     loadFinancialInfoTable(username);
-    //currentInterval = setInterval(loadFinancialInfoTable, 3000, username);
   }
   if (tasknum == 2) {
     document.getElementById("mainContainer").innerHTML = "<textarea id = 'memoTextArea'></textarea></div>";
     loadMemo(username);
-    //currentInterval = setInterval(loadMemo, 5000, username);
   }
   if (tasknum == 3) {
     document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
     loadCrossCheckInfoTable(username);
-    //currentInterval = setInterval(loadCrossCheckInfoTable, 3000, username);
   }
   if (tasknum == 4) {
     document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
     loadSortedFiles(username);
-    //currentInterval = setInterval(loadSortedFiles, 3000, username);
   }
   if (tasknum == 5) {
     document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
     loadPercentages(username);
-    //currentInterval = setInterval(loadPercentages, 3000, username);
   }
   if (tasknum == 6) {
     document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
     loadLabelingApointments(username);
-    //currentInterval = setInterval(loadLabelingApointments, 3000, username);
   }
 }
 
@@ -238,8 +299,7 @@ function loadMemoText() {
       }
     }
     return 1;
-  } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
-  {
+  } catch (e) {
     alert('Caught Exception: loadMemoText' + e.description);
   }
 }
@@ -291,8 +351,7 @@ function loadTable() {
       }
     }
     return 1;
-  } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
-  {
+  } catch (e) {
     alert('Caught Exception: loadTable -' + e.description);
   }
 }
@@ -359,6 +418,28 @@ function loadThirdGrid(response) {
   });
 }
 
+function loadGoalsTable(response) {
+  var data = response;
+
+  var container = document.getElementById('gridContainer4');
+
+  tooHot = new Handsontable(container, {
+    data: data,
+    rowHeaders: true,
+    minCols: 0,
+    minRows: 0,
+    startCols: 3,
+    minSpareRows: 1,
+    columnSorting: false,
+    colHeaders: ['Goal Type', 'Goal Amount', 'Time taken to hit goal( in seconds)'],
+    contextMenu: true,
+    readOnly: true,
+    fillHandle: {
+      autoInsertRow: false,
+    },
+  });
+}
+
 function showParticipants() {
   var x = document.getElementById("participantsContainer");
   var y = document.getElementById("particpantsCheckBox");
@@ -385,6 +466,9 @@ function registerHooks() {
   Handsontable.hooks.add('afterChange', function (change, source) {
     saveChanges();
   }, hotter);
+  Handsontable.hooks.add('afterRemoveRow', function (change, source) {
+    saveChanges();
+  }, hotter);
 }
 
 function registerSecondHooks() {
@@ -403,6 +487,8 @@ function saveChanges() {
     temp.recordDay = hotter.getDataAtCell(i, 3);
     infoArray.push(JSON.stringify(temp));
   }
+
+  console.log(infoArray);
 
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
@@ -446,8 +532,7 @@ function testFunc() {
       }
     }
     return 1;
-  } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
-  {
+  } catch (e) {
     alert('Caught Exception: testFunc -' + e.description);
   }
 }
@@ -459,12 +544,18 @@ function autoRefresh() {
   if (y.checked == false) {
     icon.classList.remove("shown");
     icon.classList.add("hidden");
-    currentInterval = clearInterval(currentInterval);
+    for (let i = 0; i < currentInterval.length; i++) {
+      clearInterval(currentInterval[i]);
+    }
   } else {
     icon.classList.add("shown");
     icon.classList.remove("hidden");
     requestTask(user);
-    currentInterval = setInterval(requestTask, 3000, user);
+    for (let i = 0; i < currentInterval.length; i++) {
+      clearInterval(currentInterval[i]);
+    }
+    var temp = setInterval(requestTask, 3000, user);
+    currentInterval.push(temp);
   }
 }
 
@@ -482,6 +573,17 @@ function showRestrictions() {
 function showLogin() {
   var x = document.getElementById("mainContainer3");
   var y = document.getElementById("loginCheckBox");
+
+  if (y.checked == true) {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
+function showGoals() {
+  var x = document.getElementById("mainContainer4");
+  var y = document.getElementById("goalsCheckBox");
 
   if (y.checked == true) {
     x.style.display = "block";

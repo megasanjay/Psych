@@ -20,6 +20,61 @@ if (!empty($_POST))
     die("Connection failed: " . $conn->connect_error ."<br>");
   }
   
+  if ($action == "forceRefresh")
+  {
+    $user = $_POST['endUser'];
+    
+    $stmt = $conn->prepare("UPDATE currenttask SET refresh = 1 WHERE username = ?");
+    if ($stmt==FALSE)
+    {
+      echo "There is a problem with prepare <br>";
+      echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+    }
+    $stmt->bind_param("s", $user);
+    $stmt->execute();               // Run query
+  }
+  
+  if ($action == "confirmReload")
+  { 
+    $stmt = $conn->prepare("UPDATE currenttask SET refresh = 0 WHERE username = ?");
+    if ($stmt==FALSE)
+    {
+      echo "There is a problem with prepare <br>";
+      echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+    }
+    $stmt->bind_param("s", $userName);
+    $stmt->execute();               // Run query
+    
+    echo "confirmed";
+    return;
+  }
+  
+  if ($action == "checkForReload")
+  { 
+    $stmt = $conn->prepare("SELECT * FROM currenttask WHERE username = ?");
+    if ($stmt==FALSE)
+    {
+      echo "There is a problem with prepare <br>";
+      echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+    }
+    $stmt->bind_param("s", $userName);
+    $stmt->execute();               // Run query
+    
+    $result = $stmt->get_result();  // query result
+    
+    if ($result->num_rows != 0)     // Results returned
+    {
+      $row = $result->fetch_assoc(); // Fetch a result row as an associative array
+      $response = $row["refresh"];
+    }
+    else
+    {
+      $response = "none";
+    }
+    echo $response;
+    return;
+  }
+  
   if ($action == 'getGoal')
   {
     $field = $_POST['field'];
@@ -39,6 +94,40 @@ if (!empty($_POST))
     {
       $row = $result->fetch_assoc(); // Fetch a result row as an associative array
       $response = $row[$field];
+    }
+    else
+    {
+      $response = "None";
+    }
+    
+    echo $response;
+    return;
+  }
+  
+  if ($action == 'getChoices')
+  { 
+    $stmt = $conn->prepare("SELECT * FROM logininfo WHERE username = ?");
+    if ($stmt==FALSE)
+    {
+      echo "There is a problem with prepare <br>";
+      echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+    }
+    $stmt->bind_param("s", $userName);
+    
+    $stmt->execute();               // Run query
+    $result = $stmt->get_result();  // query result
+    
+    if ($result->num_rows != 0)     // Results returned
+    {
+      $row = $result->fetch_assoc(); // Fetch a result row as an associative array
+      $temp = new stdClass;
+      $temp->financial = $row["financial"];
+      $temp->memo = $row["memo"];
+      $temp->crosscheck = $row["crosscheck"];
+      $temp->sort = $row["sortfiles"];
+      $temp->percentage = $row["percentage"];
+      $temp->appointment = $row["appointments"];
+      $response = json_encode($temp);
     }
     else
     {
@@ -88,6 +177,8 @@ if (!empty($_POST))
       return;
     }
   }
+  
+  
   
   // Prepare the sql restrictions
   $sql = "SELECT * FROM restrictions WHERE username = '{$userName}'";

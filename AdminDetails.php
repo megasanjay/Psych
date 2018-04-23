@@ -36,6 +36,34 @@ if (!empty($_POST))
     return;
   }
   
+  if ($action == 'requestGoals')
+  {
+    $user = $_POST["user"];
+    $sql = "SELECT * FROM goals WHERE username = '{$userName}' ORDER BY id DESC";
+           
+    $result = mysqli_query($conn2,$sql);
+
+    $rows = array();
+    
+    while($row = mysqli_fetch_assoc($result))
+    {
+      $rows[] = array($row["goaltype"],$row["goalamount"],$row["goaltimer"]); // Put the data into an associative array
+    }
+    
+    if (count($rows) > 0)          // Results returned increment comment ID value for new comment
+    {
+      echo json_encode($rows);    // Json encode the data to send back
+      $conn->close();
+      return;
+    }
+    else
+    {
+      $temp[] = array("", "", "");
+      echo json_encode($temp);
+      return;
+    }
+  }
+  
   if ($action == 'requestParticipants')
   {
     $sql = "SELECT * FROM currenttask ORDER BY username ASC";        
@@ -125,6 +153,9 @@ if (!empty($_POST))
     $infoArray = $_POST['info'];
     $infoArray = json_decode($infoArray);
     
+    $sql = "DELETE FROM restrictions ";
+    $result = mysqli_query($conn,$sql);
+    
     foreach($infoArray as $arrayObject)
     {
       $arrayObject = json_decode($arrayObject);
@@ -132,43 +163,17 @@ if (!empty($_POST))
       $recordLimiter = $arrayObject->recordLimiter;
       $recordLimited = $arrayObject->recordLimited;
       $recordDay = $arrayObject->recordDay;
-    
-    $stmt = $conn->prepare("SELECT * FROM restrictions WHERE username = ? AND limiter = ?");
-    
-    if ($stmt == FALSE)
-    {
-      echo "There is a problem with prepare <br>";
-      echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
-    }
-    $stmt->bind_param("si", $recordUsername, $recordLimiter);
-    
-    $stmt->execute();               // Run query
-    $result = $stmt->get_result();  // query result
-    
-    if ($result->num_rows != 0)     // Results returned
-    {
-      $stmt = $conn->prepare("UPDATE restrictions SET limited = ?, day = ? WHERE username = ? AND limiter = ?");
       
-      if ($stmt==FALSE)
-      {
-      	echo "There is a problem with prepare <br>";
-      	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
-      }
-      $stmt->bind_param("iisi", $recordLimited, $recordDay, $recordUsername, $recordLimiter);
-      $stmt->execute(); // Run query
-    }
-    else
-    {
       $stmt = $conn->prepare("INSERT INTO restrictions (username, limiter, limited, day) VALUES (?, ?, ?, ?)");
-      
+
       if ($stmt==FALSE)
       {
-      	echo "There is a problem with prepare <br>";
-      	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+        echo "There is a problem with prepare <br>";
+        echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
       }
+      
       $stmt->bind_param("siii", $recordUsername, $recordLimiter, $recordLimited, $recordDay);
       $stmt->execute(); // Run query
-    }
     }
     return;
   }

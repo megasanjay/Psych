@@ -14,10 +14,19 @@ function checkPrivilege() {
 
   if (loadState == undefined) {
     sessionStorage.setItem("limitors", "[]");
+    sessionStorage.setItem("choices", "[]");
     checkRestrictions();
+    return;
   }
 
   styleButtons(loadState);
+
+  if (sessionStorage.getItem("day") == 1) {
+    showChoice();
+  } else {
+    showButtons();
+  }
+
 }
 
 function styleButtons(loadState) {
@@ -91,7 +100,6 @@ function styleButtons(loadState) {
         limiterColor("appointment");
       }
     }
-    return true;
   }
 }
 
@@ -238,7 +246,6 @@ function checkLegality(taskNum) {
 }
 
 function dayOneGoals() {
-  setfunctionalGoals();
   sessionStorage.setItem("day", 1);
   sessionStorage.setItem("currentStatus", "dayOneTesting");
 
@@ -248,6 +255,60 @@ function dayOneGoals() {
   sessionStorage.setItem("sortFilesGoal", 99999999999);
   sessionStorage.setItem("percentageGoal", 99999999999);
   sessionStorage.setItem("labelApptGoal", 99999999999);
+
+  let array = ["financial", "memo", "crosscheck", "sort", "percentage", "appointment"];
+  let results = [];
+
+  for (let i = 0; i < array.length - 1; i++) {
+    for (let j = i + 1; j < array.length; j++) {
+      var temp = new Object();
+      temp.first = array[i];
+      temp.second = array[j];
+      results.push(temp);
+
+      var choicesArray = sessionStorage.getItem("choices");
+      choicesArray = JSON.parse(choicesArray);
+      choicesArray.push(temp);
+      choicesArray = JSON.stringify(choicesArray);
+      sessionStorage.setItem("choices", choicesArray);
+    }
+  }
+
+  showChoice();
+}
+
+function showChoice() {
+  var choicesArray = sessionStorage.getItem("choices");
+  choicesArray = JSON.parse(choicesArray);
+
+  if (choicesArray.length == 0) {
+    var elements = document.getElementsByClassName("shadow");
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].style.display = "none";
+    }
+    return;
+  }
+
+  var randElement = Math.floor(Math.random() * choicesArray.length);
+
+  var firstElement = choicesArray[randElement].first;
+  var secondElement = choicesArray[randElement].second;
+
+  console.log(firstElement);
+
+  var elements = document.getElementsByClassName("shadow");
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].style.display = "none";
+  }
+
+  document.getElementById(firstElement).style.display = "block";
+  document.getElementById(secondElement).style.display = "block";
+
+  choicesArray.splice(randElement, 1);
+
+  choicesArray = JSON.stringify(choicesArray);
+  sessionStorage.setItem("choices", choicesArray);
+  return;
 }
 
 function restrictControls(response) {
@@ -257,6 +318,7 @@ function restrictControls(response) {
       dayOneGoals();
       return;
     } else {
+      sessionStorage.setItem("day", 2);
       limiter = restriction.limiter;
       limited = restriction.limited;
       setGoals(limiter, limited);
@@ -264,7 +326,66 @@ function restrictControls(response) {
   }
   sessionStorage.setItem("loadState", "restrictionsPresent");
   styleButtons(sessionStorage.getItem("loadState"));
+  showButtons();
   setfunctionalGoals();
+}
+
+function showButtons() {
+  var requestURL = "http://localhost:8888/PsychPHP/Tester.php";
+  httpRequest = new XMLHttpRequest();
+  httpRequest.onreadystatechange = revealButtons;
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  httpRequest.send('userName=' + encodeURIComponent(user) + "&action=" + encodeURIComponent("getChoices"));
+}
+
+function revealButtons() {
+  try {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+      if (httpRequest.status === 200) {
+        var response = httpRequest.responseText;
+        if (response == "None") {
+          alert("Goals and button restrictions not set for this user.");
+        } else {
+          response = JSON.parse(response);
+          revealButtonsHelper(response);
+        }
+      } else {
+        alert('There was a problem with the request.');
+      }
+    }
+    return 1;
+  } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
+  {
+    alert('Caught Exception: revealButtons -' + e.description);
+  }
+}
+
+function revealButtonsHelper(response) {
+  var elements = document.getElementsByClassName("shadow");
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].style.display = "none";
+  }
+
+  if (response.financial != 0) {
+    document.getElementById("financial").style.display = "block";
+  }
+  if (response.crosscheck != 0) {
+    document.getElementById("crosscheck").style.display = "block";
+  }
+  if (response.memo != 0) {
+    document.getElementById("memo").style.display = "block";
+  }
+  if (response.sort != 0) {
+    document.getElementById("sort").style.display = "block";
+  }
+  if (response.percentage != 0) {
+    document.getElementById("percentage").style.display = "block";
+  }
+  if (response.appointment != 0) {
+    document.getElementById("appointment").style.display = "block";
+  }
+  return;
 }
 
 function setfunctionalGoals() {
@@ -320,6 +441,6 @@ function imposeRestrictions() {
     return 1;
   } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
   {
-    alert('Caught Exception: ' + e.description);
+    alert('Caught Exception: imposeRestrictions -' + e.description);
   }
 }

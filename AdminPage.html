@@ -71,12 +71,20 @@
     </label>
     </div>
     <div class="adminOptions">
+      <label class="switchLabel">Show Goals Info:</label>
+      <label class="switch">
+      <input id = "goalsCheckBox" type="checkbox" onchange="showGoals()" checked = "true">
+      <span class="slider round"></span>
+    </label>
+    </div>
+    <div class="adminOptions">
       <label class="switchLabel">Auto-Refresh:</label>
       <label class="switch">
       <input id = "autoRefreshCheckBox" type="checkbox" onchange="autoRefresh()" checked = "true">
       <span class="slider round"></span>
     </label>
     </div>
+    <div class="adminOptions refresh"><label class="switchLabel refresh" onclick="forceRefresh()">Refresh User's Screen</label></div>
   </div>
   <div id="participantsContainer">
     <ul id="participantsList"></ul>
@@ -93,6 +101,10 @@
   </div>
   <div id="mainContainer3" class="tableGridContainer">
     <div id="gridContainer3" class="tableContainer">
+    </div>
+  </div>
+  <div id="mainContainer4" class="tableGridContainer">
+    <div id="gridContainer4" class="tableContainer">
     </div>
   </div>
 </body>

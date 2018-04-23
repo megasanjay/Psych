@@ -13,8 +13,51 @@ function checkPrivilege() {
     window.open("Login.html", "_self", false); // Goes back to the login page
   }
 
+  if (sessionStorage.getItem("day") == 1) {
+    setInterval(checkForRefresh, 2000);
+  }
+
   checkRestrictions();
   loadData();
+}
+
+function checkForRefresh() {
+  var requestURL = "http://localhost:8888/PsychPHP/Tester.php";
+  httpRequest = new XMLHttpRequest();
+  httpRequest.onreadystatechange = function () {
+    try {
+      if (httpRequest.readyState === XMLHttpRequest.DONE) {
+        if (httpRequest.status === 200) {
+          var response = httpRequest.responseText;
+          if (response == 1) {
+            var xrequestURL = "http://localhost:8888/PsychPHP/Tester.php";
+            xhttpRequest = new XMLHttpRequest();
+            xhttpRequest.onreadystatechange = function () {
+              if (xhttpRequest.readyState === XMLHttpRequest.DONE) {
+                if (xhttpRequest.status === 200) {
+                  var response = xhttpRequest.responseText;
+                  if (response == "confirmed") {
+                    console.log("confirmed");
+                    window.open("TestingHomepage.html", "_self", false);
+                  }
+                }
+              }
+            };
+            xhttpRequest.open('POST', requestURL);
+            xhttpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhttpRequest.send('userName=' + encodeURIComponent(user) + '&action=' + encodeURIComponent('confirmReload'));
+          }
+        } else {
+          alert('There was a problem with request.');
+        }
+      }
+    } catch (e) {
+      alert('Caught Exception: checkForRefresh' + e.description);
+    }
+  };
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  httpRequest.send('userName=' + encodeURIComponent(user) + '&action=' + encodeURIComponent('checkForReload'));
 }
 
 function checkRestrictions() {
