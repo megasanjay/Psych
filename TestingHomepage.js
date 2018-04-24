@@ -22,7 +22,10 @@ function checkPrivilege() {
   styleButtons(loadState);
 
   if (sessionStorage.getItem("day") == 1) {
-    showChoice();
+    if (sessionStorage.getItem("reloadConfirmed") == true || sessionStorage.getItem("reloadConfirmed") == undefined) {
+      sessionStorage.setItemItem("reloadConfirmed", false);
+      showChoice();
+    }
   } else {
     showButtons();
   }

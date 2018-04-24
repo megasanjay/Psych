@@ -18,9 +18,64 @@ function checkPrivilege() {
     startPos = 1;
   }
 
+  if (sessionStorage.getItem("memoTimerStatus") == "timerComplete" || sessionStorage.getItem("memoTimerStatus") == undefined) {
+    sessionStorage.setItem("memoTimer", Date.now());
+    sessionStorage.setItem("memoTimerStatus", "timerStarted");
+  }
+
+  if (sessionStorage.getItem("day") == 1) {
+    setInterval(checkForRefresh, 2000);
+  }
+
   checkRestrictions();
   setInterval(submitChanges, 5000);
   loadMemo();
+}
+
+function checkForRefresh() {
+  var requestURL = "http://localhost:8888/PsychPHP/Tester.php";
+  httpRequest = new XMLHttpRequest();
+  httpRequest.onreadystatechange = function () {
+    try {
+      if (httpRequest.readyState === XMLHttpRequest.DONE) {
+        if (httpRequest.status === 200) {
+          var response = httpRequest.responseText;
+          if (response == 1) {
+            var xrequestURL = "http://localhost:8888/PsychPHP/Tester.php";
+            xhttpRequest = new XMLHttpRequest();
+            xhttpRequest.onreadystatechange = function () {
+              if (xhttpRequest.readyState === XMLHttpRequest.DONE) {
+                if (xhttpRequest.status === 200) {
+                  var response = xhttpRequest.responseText;
+                  if (response == "confirmed") {
+                    sessionStorage.setItem("reloadConfirmed", true);
+                    sessionStorage.setItem("financialTimerStatus", "timerComplete");
+                    sessionStorage.setItem("memoTimerStatus", "timerComplete");
+                    sessionStorage.setItem("crossCheckTimerStatus", "timerComplete");
+                    sessionStorage.setItem("sortFilesTimerStatus", "timerComplete");
+                    sessionStorage.setItem("calculatePercentageTimerStatus", "timerComplete");
+                    sessionStorage.setItem("labelApptTimerStatus", "timerComplete");
+                    window.open("TestingHomepage.html", "_self", false);
+                    window.open("TestingHomepage.html", "_self", false);
+                  }
+                }
+              }
+            };
+            xhttpRequest.open('POST', requestURL);
+            xhttpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhttpRequest.send('userName=' + encodeURIComponent(user) + '&action=' + encodeURIComponent('confirmReload'));
+          }
+        } else {
+          alert('There was a problem with request.');
+        }
+      }
+    } catch (e) {
+      alert('Caught Exception: checkForRefresh' + e.description);
+    }
+  };
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  httpRequest.send('userName=' + encodeURIComponent(user) + '&action=' + encodeURIComponent('checkForReload'));
 }
 
 function checkRestrictions() {
@@ -117,6 +172,8 @@ function checkForCompletion(position) {
     sessionStorage.setItem("memoGoal", parseInt(goal) + parseInt(tempGoal));
     sessionStorage.setItem("currentStatus", "goalMet");
 
+    submitGoalTime();
+
     if (goalStatus == "limitedGoals") {
       //sessionStorage.setItem("memoGoal", parseInt(memoGoal) + parseInt(limitedGoal));
     } else {
@@ -150,6 +207,21 @@ function checkForCompletion(position) {
     }
     window.open("TestingHomepage.html", "_self", false);
   }
+}
+
+function submitGoalTime() {
+  if (sessionStorage.getItem("memoTimerStatus") == "timerStarted") {
+    var seconds = (Date.now() - sessionStorage.getItem("memoTimer")) / 1000;
+    var goal = tempGoal;
+    sessionStorage.setItem("memoTimerStatus", "timerComplete");
+
+    var requestURL = "http://localhost:8888/PsychPHP/goals.php";
+    httpRequest = new XMLHttpRequest();
+    httpRequest.open('POST', requestURL);
+    httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    httpRequest.send('userName=' + encodeURIComponent(user) + '&time=' + encodeURIComponent(seconds) + '&type=' + encodeURIComponent("memos") + '&goal=' + encodeURIComponent(goal));
+  }
+  return;
 }
 
 function requestMemo(position) {

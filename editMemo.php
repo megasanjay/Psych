@@ -1,6 +1,5 @@
 <?php
-
-// do memo escape string
+date_default_timezone_set('America/Los_Angeles');
 
 $servername = 'localhost'; // default server name
 $serverusername = 'psychUser'; // user name that you created
@@ -59,30 +58,29 @@ function submitMemo($username, $position, $memo)
   
   if ($result->num_rows != 0)     // Results returned
   {
-    $stmt = $conn->prepare("UPDATE memoinput SET memotext = ? WHERE memoID = ? AND username = ?");
+    $timestamp = date("Y-m-d H:i:s");
+    $stmt = $conn->prepare("UPDATE memoinput SET memotext = ?, timestamp = ? WHERE memoID = ? AND username = ?");
     
     if ($stmt==FALSE)
     {
       echo "There is a problem with prepare <br>";
       echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
     }
-    $stmt->bind_param("sis", $memo, $position, $username);
+    $stmt->bind_param("ssis", $memo, $timestamp, $position, $username);
     $stmt->execute(); // Run query
     echo "Success";
   }
   else
-  {
-    $sql = "SELECT * FROM memoinput";
-    $numResult = $conn->query($sql);
-    
-    $stmt = $conn->prepare("INSERT INTO memoinput (memoID, username, memotext) VALUES (?,?,?)");
+  { 
+    $timestamp = date("Y-m-d H:i:s");
+    $stmt = $conn->prepare("INSERT INTO memoinput (memoID, username, memotext, timestamp) VALUES (?,?,?,?)");
 
     if ($stmt==FALSE)
     {
       echo "There is a problem with prepare <br>";
       echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
     }
-    $stmt->bind_param("iss", $position, $username, $memo);
+    $stmt->bind_param("isss", $position, $username, $memo, $timestamp);
     $stmt->execute(); // Run query
     echo "Success";
   }

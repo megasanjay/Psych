@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('America/Los_Angeles');
 
 $servername = 'localhost'; // default server name
 $username = 'psychUser'; // user name that you created
@@ -46,7 +47,8 @@ if (!empty($_POST))
     
     if ($result->num_rows != 0)     // Results returned
     {
-      $stmt = $conn->prepare("UPDATE percentageinput SET apptattend = ?, apptlate = ?, apptnotattend = ?, percentattend = ?, percentlate = ? WHERE username = ? AND recordnum = ?");
+      $timestamp = date("Y-m-d H:i:s");
+      $stmt = $conn->prepare("UPDATE percentageinput SET apptattend = ?, apptlate = ?, apptnotattend = ?, percentattend = ?, percentlate = ?, timestamp = ? WHERE username = ? AND recordnum = ?");
       
       if ($stmt==FALSE)
       {
@@ -54,21 +56,23 @@ if (!empty($_POST))
       	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
       }
       // when binding use double for data2
-      $stmt->bind_param("iiiddsi", $recordApptAttend, $recordApptLate, $recordApptNotAttend, $recordPercentAttend, $recordPercentLate, $tblUsername, $id);
+      $stmt->bind_param("iiiddssi", $recordApptAttend, $recordApptLate, $recordApptNotAttend, $recordPercentAttend, $recordPercentLate, $timestamp, $tblUsername, $id);
       $stmt->execute(); // Run query
       
     }
     else
     {
-      $stmt = $conn->prepare("INSERT INTO percentageinput (recordnum, username, apptattend, apptlate, apptnotattend, percentattend, percentlate) VALUES (?, ?, ?, ?, ?, ?, ?)");
+      $timestamp = date("Y-m-d H:i:s");
+      $stmt = $conn->prepare("INSERT INTO percentageinput (recordnum, username, apptattend, apptlate, apptnotattend, percentattend, percentlate, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
       
       if ($stmt==FALSE)
       {
       	echo "There is a problem with prepare <br>";
-      	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+      	echo $conn->error;
+        return;
       }
       // when binding use double for data2
-      $stmt->bind_param("isiiidd", $id, $tblUsername, $recordApptAttend, $recordApptLate, $recordApptNotAttend, $recordPercentAttend, $recordPercentLate);
+      $stmt->bind_param("isiiidds", $id, $tblUsername, $recordApptAttend, $recordApptLate, $recordApptNotAttend, $recordPercentAttend, $recordPercentLate, $timestamp);
       $stmt->execute(); // Run query
     }
   }

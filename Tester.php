@@ -23,8 +23,17 @@ if (!empty($_POST))
   if ($action == "forceRefresh")
   {
     $user = $_POST['endUser'];
+    $subaction = $_POST['subaction'];
     
-    $stmt = $conn->prepare("UPDATE currenttask SET refresh = 1 WHERE username = ?");
+    if ($subaction == 'request')
+    {
+      $stmt = $conn->prepare("UPDATE currenttask SET refresh = 1 WHERE username = ?");
+    }
+    if ($subaction == 'cancel')
+    {
+      $stmt = $conn->prepare("UPDATE currenttask SET refresh = 0 WHERE username = ?");
+    }
+    
     if ($stmt==FALSE)
     {
       echo "There is a problem with prepare <br>";

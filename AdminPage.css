@@ -36,6 +36,10 @@ li {
   display: inline-block;
 }
 
+.liveFeedContainer {
+  margin-top: 1em;
+}
+
 #buttonContainer {
   display: inline;
   padding-bottom: 1em;
@@ -57,9 +61,14 @@ li {
   background-color: rgba(255, 255, 255, 0.5);
 }
 
-.refresh:hover {
-  background-color: rgba(255, 255, 255, 1);
-  cursor: pointer;
+.refreshDiv {
+  background-color: none;
+}
+
+.btn.btn-danger:hover {
+  color: white;
+  background-color: rgba(225, 50, 71, 1);
+  transition: all ease-in-out 0.3s;
 }
 
 span {
@@ -68,6 +77,20 @@ span {
 
 *:focus {
   outline: none;
+}
+
+/******* Menu Bar *****/
+
+.menuTab {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  color: white;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+  transition: all ease-in-out 0.3s;
 }
 
 /*
@@ -96,7 +119,7 @@ buttons
   background-color: #FFFFFF;
 }
 
-.active {
+.activeUser {
   color: #000000;
   background-color: #FFFFFF;
 }

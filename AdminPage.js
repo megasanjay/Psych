@@ -112,9 +112,9 @@ function loadCurrentParticipants() {
   }
 }
 
-function forceRefresh() {
+function forceRefresh(subaction) {
   var tempUserName;
-  var elements = document.getElementsByClassName("active");
+  var elements = document.getElementsByClassName("activeUser");
 
   if (elements.length != 1) {
     alert("No user has been selected.");
@@ -123,7 +123,32 @@ function forceRefresh() {
     tempUserName = elements[0].innerHTML;
   }
 
-  var temp = confirm("This will force a refresh of the User's screen");
+  var temp = confirm("This will force a refresh of the user's screen");
+
+  if (temp == false) {
+    return;
+  }
+
+  var requestURL = "http://localhost:8888/PsychPHP/Tester.php";
+  httpRequest = new XMLHttpRequest()
+  httpRequest.open('POST', requestURL);
+  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  httpRequest.send('userName=' + encodeURIComponent("admin") + "&endUser=" + encodeURIComponent(tempUserName) + "&action=" + encodeURIComponent("forceRefresh") + "&subaction=" + encodeURIComponent(subaction));
+  alert("Refresh command sent.");
+}
+
+function cancelRefresh() {
+  var tempUserName;
+  var elements = document.getElementsByClassName("activeUser");
+
+  if (elements.length != 1) {
+    alert("No user has been selected.");
+    return;
+  } else {
+    tempUserName = elements[0].innerHTML;
+  }
+
+  var temp = confirm("This will cancel the refresh request of the user's screen. WARNING! The refresh may have already been completed");
 
   if (temp == false) {
     return;
@@ -137,6 +162,7 @@ function forceRefresh() {
 
   alert("Refresh command sent.");
 }
+
 
 function insertParticipant(username, tasknum) {
   //alert(adding);
@@ -153,13 +179,13 @@ function getTaskNum(username, tasknum) {
 
   user = username;
 
-  var temp = document.getElementsByClassName("active");
+  var temp = document.getElementsByClassName("activeUser");
 
   for (let i = 0; i < temp.length; i++) {
-    temp[i].classList.remove("active");
+    temp[i].classList.remove("activeUser");
   }
 
-  event.srcElement.classList.add("active");
+  event.srcElement.classList.add("activeUser");
 
   requestTask(username);
 
@@ -188,6 +214,7 @@ function loadGoals() {
       if (xhttpRequest.status === 200) {
         var response = xhttpRequest.responseText;
         response = JSON.parse(response);
+        document.getElementById("gridContainer4").innerHTML = "";
         loadGoalsTable(response);
       } else {
         alert('There was a problem with the request.');
@@ -237,7 +264,7 @@ function viewLiveFeed(username, tasknum) {
     loadFinancialInfoTable(username);
   }
   if (tasknum == 2) {
-    document.getElementById("mainContainer").innerHTML = "<textarea id = 'memoTextArea'></textarea></div>";
+    document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
     loadMemo(username);
   }
   if (tasknum == 3) {
@@ -260,6 +287,7 @@ function viewLiveFeed(username, tasknum) {
 
 function loadFinancialInfoTable(username) {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
+  columnHeaders = ['Date', 'Check Number', 'Amount', 'Timestamp'];
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -270,6 +298,7 @@ function loadFinancialInfoTable(username) {
 
 function loadSortedFiles(username) {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'></div>";
+  columnHeaders = ['File Name', 'Folder Selected', 'Timestamp'];
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -279,34 +308,19 @@ function loadSortedFiles(username) {
 }
 
 function loadMemo(username) {
-  document.getElementById("mainContainer").innerHTML = "<textarea id = 'memoTextArea'></textarea></div>";
+  document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'></div>";
+  columnHeaders = ['Memo Text', 'Timestamp'];
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
-  httpRequest.onreadystatechange = loadMemoText;
+  httpRequest.onreadystatechange = loadTable;
   httpRequest.open('POST', requestURL);
   httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   httpRequest.send('userName=' + encodeURIComponent(username) + '&action=' + encodeURIComponent('memo'));
 }
 
-function loadMemoText() {
-  try {
-    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-      if (httpRequest.status === 200) {
-        var response = httpRequest.responseText;
-        document.getElementById("memoTextArea").innerHTML = response;
-      } else {
-        alert('There was a problem with request.');
-      }
-    }
-    return 1;
-  } catch (e) {
-    alert('Caught Exception: loadMemoText' + e.description);
-  }
-}
-
-
 function loadLabelingApointments(username) {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
+  columnHeaders = ['First Name', 'Last Name', 'Appointmnet Number', 'Selected Option', 'Timestamp'];
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -317,6 +331,7 @@ function loadLabelingApointments(username) {
 
 function loadCrossCheckInfoTable(username) {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
+  columnHeaders = ['Date', 'Patient Name', 'Patient Age', 'Patient Height', 'Patient Weight', 'Timestamp'];
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -327,6 +342,7 @@ function loadCrossCheckInfoTable(username) {
 
 function loadPercentages(username) {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
+  columnHeaders = ['Appts Attended', 'Appts Late', 'Appts Missed', '% Attended', '% Late', 'Timestamp'];
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -369,6 +385,7 @@ function loadGrid(response) {
     minSpareRows: 2,
     columnSorting: true,
     readOnly: true,
+    colHeaders: columnHeaders,
     contextMenu: true,
     fillHandle: {
       autoInsertRow: false,
@@ -431,35 +448,13 @@ function loadGoalsTable(response) {
     startCols: 3,
     minSpareRows: 1,
     columnSorting: false,
-    colHeaders: ['Goal Type', 'Goal Amount', 'Time taken to hit goal( in seconds)'],
+    colHeaders: ['Goal Type', 'Goal Amount', 'Time taken to hit goal (in seconds)'],
     contextMenu: true,
     readOnly: true,
     fillHandle: {
       autoInsertRow: false,
     },
   });
-}
-
-function showParticipants() {
-  var x = document.getElementById("participantsContainer");
-  var y = document.getElementById("particpantsCheckBox");
-
-  if (y.checked == true) {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-
-function showLiveFeed() {
-  var x = document.getElementById("mainContainer");
-  var y = document.getElementById("liveFeedCheckBox");
-
-  if (y.checked == true) {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
 }
 
 function registerHooks() {
@@ -487,8 +482,6 @@ function saveChanges() {
     temp.recordDay = hotter.getDataAtCell(i, 3);
     infoArray.push(JSON.stringify(temp));
   }
-
-  console.log(infoArray);
 
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
@@ -559,35 +552,11 @@ function autoRefresh() {
   }
 }
 
-function showRestrictions() {
-  var x = document.getElementById("mainContainer2");
-  var y = document.getElementById("restrictionsCheckBox");
+function showPane(activePane) {
+  document.getElementById("goals").style.display = "none";
+  document.getElementById("loginInfo").style.display = "none";
+  document.getElementById("liveFeed").style.display = "none";
+  document.getElementById("refreshPage").style.display = "none";
 
-  if (y.checked == true) {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-
-function showLogin() {
-  var x = document.getElementById("mainContainer3");
-  var y = document.getElementById("loginCheckBox");
-
-  if (y.checked == true) {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-
-function showGoals() {
-  var x = document.getElementById("mainContainer4");
-  var y = document.getElementById("goalsCheckBox");
-
-  if (y.checked == true) {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
+  document.getElementById(activePane).style.display = "block";
 }

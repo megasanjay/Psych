@@ -26,6 +26,7 @@ body {
 #editTextBox {
   font-family: 'Lato', sans-serif;
   width: 70%;
+  height: 10%;
   font-size: 1em;
   background-color: transparent;
   padding: 10px 10px 10px 10px;
@@ -36,11 +37,15 @@ body {
 .topContainer {
   display: block;
   color: white;
-  background-color: lightseagreen;
+  background-color: rgb(31, 120, 81);
   height: 80px;
   width: auto;
   padding: 10px 20px 10px 20px;
   margin-bottom: 1em;
+  font-family: 'Roboto', sans-serif;
+}
+
+h1 {
   font-family: 'Roboto', sans-serif;
 }
 
@@ -95,9 +100,6 @@ body {
   right: 0;
 }
 
-*:focus {
-  outline: none;
-}
 
 /******* Menu Bar *****/
 
@@ -231,4 +233,6 @@ body {
   transition: all 0.4s linear;
 }
 
-/***Wedges***/
+*:focus {
+  outline: none;
+}

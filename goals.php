@@ -8,7 +8,7 @@ $dbname = 'psych';
 if (!empty($_POST))
 {
   $userName = $_POST['userName'];
-  $seconds = $_POST['seconds'];
+  $seconds = $_POST['time'];
   $type = $_POST['type'];
   $goal = $_POST['goal'];
   

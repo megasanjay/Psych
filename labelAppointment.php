@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('America/Los_Angeles');
 
 require_once("nameGenerator.php");
 
@@ -134,20 +135,22 @@ function submitMemo($username, $position, $selected)
   
   if ($result->num_rows != 0)     // Results returned
   {
-    $stmt = $conn->prepare("UPDATE labelappointmentinput SET selected = ? WHERE position = ? AND username = ?");
+    $timestamp = date("Y-m-d H:i:s");
+    $stmt = $conn->prepare("UPDATE labelappointmentinput SET selected = ?, timestamp = ? WHERE position = ? AND username = ?");
     
     if ($stmt==FALSE)
     {
       echo "There is a problem with prepare <br>";
       echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
     }
-    $stmt->bind_param("sis", $selected, $position, $username);
+    $stmt->bind_param("ssis", $selected, $timestamp, $position, $username);
     $stmt->execute(); // Run query
     echo "Success";
   }
   else
   {
-    $stmt = $conn->prepare("INSERT INTO labelappointmentinput (position, username, selected) VALUES (?,?,?)");
+    $timestamp = date("Y-m-d H:i:s");
+    $stmt = $conn->prepare("INSERT INTO labelappointmentinput (position, username, selected, timestamp) VALUES (?,?,?,?)");
     
     if ($stmt==FALSE)
     {
@@ -155,7 +158,7 @@ function submitMemo($username, $position, $selected)
       echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
       return;
     }
-    $stmt->bind_param("iss", $position, $username, $selected);
+    $stmt->bind_param("isss", $position, $username, $selected, $timestamp);
     $stmt->execute(); // Run query
     echo "Success";
   }

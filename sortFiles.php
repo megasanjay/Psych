@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('America/Los_Angeles');
 
 $servername = 'localhost'; // default server name
 $serverusername = 'psychUser'; // user name that you created
@@ -39,16 +40,17 @@ function submitFile($username, $filename, $selected)
       die("Connection failed: " . $conn->connect_error ."<br>");
   }
   // Prepare sql statement
-  $sql = "SELECT * FROM sortedfiles";
+  $sql = "SELECT * FROM sortedfiles LIMIT 2";
   $result = $conn->query($sql);
-
+  $timestamp = date("Y-m-d H:i:s");
+  
   if ($result->num_rows == 0)
   {
-     $stmt = $conn->prepare("INSERT INTO sortedfiles (recordnum, username, inputfile, selected) VALUES (0,?,?,?)");
+     $stmt = $conn->prepare("INSERT INTO sortedfiles (recordnum, username, inputfile, selected, timestamp) VALUES (0,?,?,? ?)");
   }
   else
   {
-     $stmt = $conn->prepare("INSERT INTO sortedfiles (username, inputfile, selected) VALUES (?,?,?)");
+     $stmt = $conn->prepare("INSERT INTO sortedfiles (username, inputfile, selected, timestamp) VALUES (?,?,?,?)");
   }
 
   if ($stmt==FALSE)
@@ -57,12 +59,11 @@ function submitFile($username, $filename, $selected)
     echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
     return;
   }
-  $stmt->bind_param("sss", $username, $filename, $selected);
-  //$stmt->execute(); // Run query
+  $stmt->bind_param("ssss", $username, $filename, $selected, $timestamp);
   if ($stmt->execute() == TRUE)
   {
     echo "Success"; 
     return;
   }
-  }
+}
 ?>

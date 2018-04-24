@@ -1,39 +1,38 @@
 <!DOCTYPE html>
 
-<html lang = "en">
+<html lang="en">
 
 <head>
-	<meta charset = "UTF-8" />
-	<title>Login!</title>
-	<link rel = "stylesheet" type = "text/css" href = "Login.css">
-    <script type = "text/javascript" src = "Login.js"></script>
+  <meta charset="UTF-8" />
+  <title>Login!</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="http://csci130.xyz/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="http://csci130.xyz/favicon-16x16.png">
+  <link rel="stylesheet" type="text/css" href="Login.css">
+  <script type="text/javascript" src="Login.js"></script>
 </head>
 
-<body onload = "sessionStorage.clear();">
+<body onload="sessionStorage.clear();">
   <div class="mainContainer">
     <form>
-      <fieldset> <!-- Username Input -->
-        <input id = "usernameTextBox" class = "regularTextbox" type = "text" autofocus="autofocus"
-               placeholder = "Username " maxlength="30"
-               onkeydown = "if (event.keyCode == 13){
+      <fieldset>
+        <!-- Username Input -->
+        <input id="usernameTextBox" class="regularTextbox" type="text" autofocus="autofocus" placeholder="Username " maxlength="30" onkeydown="if (event.keyCode == 13){
                             document.getElementById('submitButt').click();}
                             else{
                             document.getElementById('usernameTextBox').classList.remove('errorTextbox');
                             document.getElementById('usernameTextBox').classList.add('regularTextbox');
                             }">
-        <br> <br><!-- Password Input-->
-        <input id = "passwordTextBox" class = "regularTextbox" type = "password"
-               placeholder = "Password" maxlength="30"
-               onkeydown = "if (event.keyCode == 13){
+        <br> <br>
+        <!-- Password Input-->
+        <input id="passwordTextBox" class="regularTextbox" type="password" placeholder="Password" maxlength="30" onkeydown="if (event.keyCode == 13){
                             document.getElementById('submitButt').click();}
                             else{
                             document.getElementById('passwordTextBox').classList.remove('errorTextbox');
                             document.getElementById('passwordTextBox').classList.add('regularTextbox');
                             }">
-				<br> <br><!-- Email Address Input-->
-        <input id = "emailTextBox" class = "regularTextbox" type = "text"
-               placeholder = "Email Address" maxlength="30"
-               onkeydown = "if (event.keyCode == 13){
+        <br> <br>
+        <!-- Email Address Input-->
+        <input id="emailTextBox" class="regularTextbox" type="text" placeholder="Email Address" maxlength="30" onkeydown="if (event.keyCode == 13){
                             document.getElementById('submitButt').click();}
                             else{
                             document.getElementById('emailTextBox').classList.remove('errorTextbox');
@@ -41,11 +40,12 @@
                             }">
       </fieldset>
     </form>
-    <br><br><!-- Submit button calls the submit() function that will validate the user-->
-    <button id = "submitButt" class = "submitButton"
-                onclick = "submit()">
+    <br><br>
+    <!-- Submit button calls the submit() function that will validate the user-->
+    <button id="submitButt" class="submitButton" onclick="submit()">
             <span >Log In  </span>
 		</button>
   </div>
 </body>
+
 </html>

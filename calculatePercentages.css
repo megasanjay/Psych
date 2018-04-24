@@ -28,11 +28,7 @@ h1 {
 }
 
 span {
-  font-weight: bold;
-}
-
-*:focus {
-  outline: none;
+  font-weight: bold
 }
 
 /**************
@@ -89,9 +85,10 @@ table.htCore tbody tr td {
 
 .menuTab {
   position: absolute;
-  right: 4px;
-  top: 4px;
+  right: 8px;
+  top: 1em;
   color: white;
+  margin-right: 1em;
 }
 
 .nav-link:hover {
@@ -217,4 +214,6 @@ table.htCore tbody tr td {
   transition: all 0.4s linear;
 }
 
-/***Wedges***/
+*:focus {
+  outline: none;
+}

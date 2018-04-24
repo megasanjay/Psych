@@ -18,6 +18,11 @@ function checkPrivilege() {
     startPos = 1;
   }
 
+  if (sessionStorage.getItem("labelApptTimerStatus") == "timerComplete" || sessionStorage.getItem("labelApptTimerStatus") == undefined) {
+    sessionStorage.setItem("labelApptTimer", Date.now());
+    sessionStorage.setItem("labelApptTimerStatus", "timerStarted");
+  }
+
   if (sessionStorage.getItem("day") == 1) {
     setInterval(checkForRefresh, 2000);
   }
@@ -42,7 +47,14 @@ function checkForRefresh() {
                 if (xhttpRequest.status === 200) {
                   var response = xhttpRequest.responseText;
                   if (response == "confirmed") {
-                    console.log("confirmed");
+                    sessionStorage.setItem("reloadConfirmed", true);
+                    sessionStorage.setItem("financialTimerStatus", "timerComplete");
+                    sessionStorage.setItem("memoTimerStatus", "timerComplete");
+                    sessionStorage.setItem("crossCheckTimerStatus", "timerComplete");
+                    sessionStorage.setItem("sortFilesTimerStatus", "timerComplete");
+                    sessionStorage.setItem("calculatePercentageTimerStatus", "timerComplete");
+                    sessionStorage.setItem("labelApptTimerStatus", "timerComplete");
+                    window.open("TestingHomepage.html", "_self", false);
                     window.open("TestingHomepage.html", "_self", false);
                   }
                 }
@@ -117,10 +129,9 @@ function checkForCompletion(position) {
     setInterval(checkForRefresh, 2000);
   }
 
-  console.log("position" + position);
-  console.log("goal" + goal);
-
   if (parseInt(position) > parseInt(goal)) {
+    submitGoalTime();
+
     sessionStorage.setItem("labelApptGoal", parseInt(goal) + parseInt(tempGoal));
     sessionStorage.setItem("currentStatus", "goalMet");
 
@@ -157,6 +168,21 @@ function checkForCompletion(position) {
     }
     window.open("TestingHomepage.html", "_self", false);
   }
+}
+
+function submitGoalTime() {
+  if (sessionStorage.getItem("labelApptTimerStatus") == "timerStarted") {
+    var seconds = (Date.now() - sessionStorage.getItem("labelApptTimer")) / 1000;
+    var goal = tempGoal;
+    sessionStorage.setItem("labelApptTimerStatus", "timerComplete");
+
+    var requestURL = "http://localhost:8888/PsychPHP/goals.php";
+    httpRequest = new XMLHttpRequest();
+    httpRequest.open('POST', requestURL);
+    httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    httpRequest.send('userName=' + encodeURIComponent(user) + '&time=' + encodeURIComponent(seconds) + '&type=' + encodeURIComponent("labelAppointments") + '&goal=' + encodeURIComponent(goal));
+  }
+  return;
 }
 
 function requestData(position) {
@@ -235,7 +261,7 @@ function displayData() {
     return 1;
   } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
   {
-    alert('Caught Exception: ' + e.description);
+    alert('Caught Exception: displayData -' + e.description);
   }
 }
 
@@ -245,7 +271,7 @@ function confirmMove() {
       if (httpRequest.status === 200) {
         var response = httpRequest.responseText;
         if (response == 'Rejected') {
-          alert("Selection out of bounds");
+          alert("This action is not possible at this time.");
           return;
         } else {
           sessionStorage.setItem("lastApptViewed", response);
@@ -258,7 +284,7 @@ function confirmMove() {
     return 1;
   } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
   {
-    alert('Caught Exception: ' + e.description);
+    alert('Caught Exception: confirmMove-' + e.description);
   }
 }
 
@@ -283,7 +309,7 @@ function confirmSave() {
     return 1;
   } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
   {
-    alert('Caught Exception: ' + e.description);
+    alert('Caught Exception: confirmSave-' + e.description);
   }
 }
 

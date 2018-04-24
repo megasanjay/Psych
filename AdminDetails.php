@@ -39,7 +39,7 @@ if (!empty($_POST))
   if ($action == 'requestGoals')
   {
     $user = $_POST["user"];
-    $sql = "SELECT * FROM goals WHERE username = '{$userName}' ORDER BY id DESC";
+    $sql = "SELECT * FROM goals WHERE username = '{$user}' ORDER BY id DESC";
            
     $result = mysqli_query($conn2,$sql);
 
@@ -250,7 +250,14 @@ if (!empty($_POST))
     
     while($row = mysqli_fetch_assoc($result))
     {
-      $rows[] = array($row["recorddate"],$row["checknumber"], $row["amount"]); // Put the data into an associative array
+      if (isset($_POST['reload']))
+      {
+        $rows[] = array($row["recorddate"],$row["checknumber"], $row["amount"]);
+      }
+      else
+      {
+        $rows[] = array($row["recorddate"],$row["checknumber"], $row["amount"],$row["timestamp"]);
+      }
     }
     
     if (count($rows) > 0)          // Results returned increment comment ID value for new comment
@@ -261,7 +268,7 @@ if (!empty($_POST))
     }
     else
     {
-      $temp[] = array("", "", "");
+      $temp[] = array("", "", "", "");
       echo json_encode($temp);
       return;
     }
@@ -276,7 +283,7 @@ if (!empty($_POST))
     
     while($row = mysqli_fetch_assoc($result))
     {
-      $rows[] = array($row["inputfile"],$row["selected"]); // Put the data into an associative array
+      $rows[] = array($row["inputfile"],$row["selected"], $row["timestamp"]); // Put the data into an associative array
     }
     
     if (count($rows) > 0)          // Results returned increment comment ID value for new comment
@@ -287,7 +294,7 @@ if (!empty($_POST))
     }
     else
     {
-      $temp[] = array("", "");
+      $temp[] = array("", "", "");
       echo json_encode($temp);
       return;
     }
@@ -310,7 +317,14 @@ if (!empty($_POST))
     
     while($row = mysqli_fetch_assoc($result))
     {
-      $rows[] = array($row["recordDate"],$row["patientName"],$row["patientAge"],$row["patientHeight"],$row["patientWeight"]); // Put the data into an associative array
+      if (isset($_POST['reload']))
+      {
+        $rows[] = array($row["recordDate"],$row["patientName"],$row["patientAge"],$row["patientHeight"],$row["patientWeight"]);
+      }
+      else
+      {
+        $rows[] = array($row["recordDate"],$row["patientName"],$row["patientAge"],$row["patientHeight"],$row["patientWeight"], $row["timestamp"]);
+      }
     }
     
     if (count($rows) > 0)          // Results returned increment comment ID value for new comment
@@ -321,7 +335,7 @@ if (!empty($_POST))
     }
     else
     {
-      $temp[] = array("", "", "", "", "");
+      $temp[] = array("", "", "", "", "", "");
       echo json_encode($temp);
       return;
     }
@@ -344,7 +358,14 @@ if (!empty($_POST))
     
     while($row = mysqli_fetch_assoc($result))
     {
-      $rows[] = array($row["apptattend"],$row["apptlate"],$row["apptnotattend"],$row["percentattend"],$row["percentlate"]); // Put the data into an associative array
+      if (isset($_POST['reload']))
+      {
+        $rows[] = array($row["apptattend"],$row["apptlate"],$row["apptnotattend"],$row["percentattend"],$row["percentlate"]); // Put the data into an associative array
+      }
+      else
+      {
+        $rows[] = array($row["apptattend"],$row["apptlate"],$row["apptnotattend"],$row["percentattend"],$row["percentlate"], $row["timestamp"]); 
+      }
     }
     
     if (count($rows) > 4)          // Results returned increment comment ID value for new comment
@@ -355,11 +376,11 @@ if (!empty($_POST))
     }
     else
     {
-      $temp[] = array(9, 3, 8, "", "");
-      $temp[] = array(10, 6, 3, "", "");
-      $temp[] = array(1, 0, 2, "", "");
-      $temp[] = array(2, 1, 2, "", "");
-      $temp[] = array(2, 1, 2, "", "");
+      $temp[] = array(9, 3, 8, "", "", "");
+      $temp[] = array(10, 6, 3, "", "", "");
+      $temp[] = array(1, 0, 2, "", "", "");
+      $temp[] = array(2, 1, 2, "", "", "");
+      $temp[] = array(2, 1, 2, "", "", "");
       echo json_encode($temp);
       return;
     }
@@ -367,6 +388,31 @@ if (!empty($_POST))
   
   if ($action == 'memo')
   {
+    $sql = "SELECT * FROM memoinput WHERE username = '{$userName}' ORDER BY id DESC";         
+    $result = mysqli_query($conn2,$sql);
+
+    $rows = array();
+    
+    while($row = mysqli_fetch_assoc($result))
+    {
+      $rows[] = array($row["memotext"], $row["timestamp"]);
+    }
+    
+    if (count($rows) > 0)
+    {
+      echo json_encode($rows);
+      $conn->close();
+      return;
+    }
+    else
+    {
+      $temp[] = array("", "");
+      echo json_encode($temp);
+      return;
+    }
+    
+    
+    
     $sql = "SELECT * FROM memoinput WHERE username = '{$userName}' ORDER BY id DESC LIMIT 1";        
     $result = mysqli_query($conn2,$sql);
     
@@ -385,14 +431,14 @@ if (!empty($_POST))
   
   if ($action == 'labelAppointment')
   {
-    $sql = "SELECT labelappointmentinfo.firstname AS firstname, labelappointmentinfo.lastname AS lastname, labelappointmentinfo.apptnum AS apptnum, labelappointmentinput.selected AS selected FROM labelappointmentinput, labelappointmentinfo WHERE labelappointmentinput.username = '{$userName}' AND labelappointmentinput.position = labelappointmentinfo.id";        
+    $sql = "SELECT labelappointmentinfo.firstname AS firstname, labelappointmentinfo.lastname AS lastname, labelappointmentinfo.apptnum AS apptnum, labelappointmentinput.selected AS selected, labelappointmentinput.timestamp AS timestamp FROM labelappointmentinput, labelappointmentinfo WHERE labelappointmentinput.username = '{$userName}' AND labelappointmentinput.position = labelappointmentinfo.id";        
     $result = mysqli_query($conn2,$sql);
 
     $rows = array();
     
     while($row = mysqli_fetch_assoc($result))
     {
-      $rows[] = array($row["firstname"],$row["lastname"], $row["apptnum"], $row["selected"]); // Put the data into an associative array
+      $rows[] = array($row["firstname"], $row["lastname"], $row["apptnum"], $row["selected"], $row["timestamp"]); // Put the data into an associative array
     }
     
     if (count($rows) > 0)          // Results returned increment comment ID value for new comment
@@ -403,7 +449,7 @@ if (!empty($_POST))
     }
     else
     {
-      $temp[] = array("", "", "", "");
+      $temp[] = array("", "", "", "", "");
       echo json_encode($temp);
       return;
     }

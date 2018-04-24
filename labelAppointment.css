@@ -12,52 +12,23 @@ body {
   background-size: contain;
 }
 
-input {
-  font-size: 1em;
-}
-
-label {
-  width: 30%;
-  padding-right: 20px;
-  text-align: right;
-  margin-right: 10px;
-}
-
-select {
-  padding-left: 50px;
-  font-size: 0.8em;
-}
-
 .inputForm {
-  width: 100%;
+  width: auto;
   height: auto;
   outline: none;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-size: 1.1em;
 }
 
 input {
-  border-radius: 10px;
-  border: 1px solid black;
   text-align: center;
 }
 
-.inputFieldset > div {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "Roboto", Helvetica, Arial, sans-serif;
-  font-size: 1.5em;
-}
-
 .inputFieldset {
-  border: none;
-  display: block;
-  vertical-align: middle;
-  align-items: center;
-  justify-content: center;
+  margin-left: 1em;
 }
 
 .mainContainer {
@@ -69,6 +40,31 @@ input {
   width: 95%;
   margin-left: 2%;
   border: none;
+}
+
+.btncontainer {
+  display: flex;
+  justify-content: space-between
+}
+
+/* Glow */
+
+.hvr-glow {
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-transform: perspective(3px) translateZ(0);
+  transform: perspective(3px) translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  -webkit-transition-duration: 0.1s;
+  transition-duration: 0.1s;
+  -webkit-transition-property: box-shadow;
+  transition-property: box-shadow;
+}
+
+.hvr-glow:hover,
+.hvr-glow:focus,
+.hvr-glow:active {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
 }
 
 .submitButton {
@@ -129,7 +125,7 @@ input {
 
 .topContainer {
   color: white;
-  background-color: lightseagreen;
+  background-color: rgb(31, 120, 81);
   height: 80px;
   width: auto;
   padding: 10px 20px 0px 20px;
@@ -153,9 +149,10 @@ h1 {
 
 .menuTab {
   position: absolute;
-  right: 4px;
-  top: 4px;
+  right: 8px;
+  top: 1em;
   color: white;
+  margin-right: 1em;
 }
 
 .nav-link:hover {

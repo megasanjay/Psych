@@ -5,6 +5,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Sort Files</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="http://csci130.xyz/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="http://csci130.xyz/favicon-16x16.png">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="sortFiles.css">
@@ -50,50 +54,53 @@
 
   <br>
 
-  <div id="fileIdentifier"></div>
-  <br>
-
-  <div class="inputForm">
-    <div class="inputFieldset">
-      <div>
-        Select folder to place file in: <select id="sortFile">
-        <option disabled selected value="ns"> 
-          -- select an option -- 
-        </option>
-        <option value="A">A</option>
-        <option value="B">B</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-        <option value="E">E</option>
-        <option value="F">F</option>
-        <option value="G">G</option>
-        <option value="H">H</option>
-        <option value="I">I</option>
-        <option value="J">J</option>
-        <option value="K">K</option>
-        <option value="L">L</option>
-        <option value="M">M</option>
-        <option value="N">N</option>
-        <option value="O">O</option>
-        <option value="P">P</option>
-        <option value="Q">Q</option>
-        <option value="R">R</option>
-        <option value="S">S</option>
-        <option value="T">T</option>
-        <option value="U">U</option>
-        <option value="V">V</option>
-        <option value="W">W</option>
-        <option value="X">X</option>
-        <option value="Y">Y</option>
-        <option value="Z">Z</option>
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 id="fileIdentifier" class="display-4" style="display: flex;justify-content: center;"></h1>
+      <br>
+      <div class="lead" style="display: flex;justify-content: center;">Place this file in the appropriate folder.</div>
+      <br>
+      <div class="lead" style="display: flex; justify-content: center;">
+        <select id="sortFile" class="custom-select custom-select-lg mb-3 " style="width: auto;" onchange="dynamicMove(this.value)">
+<option disabled selected value="ns">Pick the folder to place in...</option>
+<option value="A">A</option>
+<option value="B">B</option>
+<option value="C">C</option>
+<option value="D">D</option>
+<option value="E">E</option>
+<option value="F">F</option>
+<option value="G">G</option>
+<option value="H">H</option>
+<option value="I">I</option>
+<option value="J">J</option>
+<option value="K">K</option>
+<option value="L">L</option>
+<option value="M">M</option>
+<option value="N">N</option>
+<option value="O">O</option>
+<option value="P">P</option>
+<option value="Q">Q</option>
+<option value="R">R</option>
+<option value="S">S</option>
+<option value="T">T</option>
+<option value="U">U</option>
+<option value="V">V</option>
+<option value="W">W</option>
+<option value="X">X</option>
+<option value="Y">Y</option>
+<option value="Z">Z</option>
         </select>
       </div>
       <br>
-      <div id="buttonDiv">
-        <button class="submitButton" onclick="return submitData();"><span>Move File to Folder </span></button>
+      <div style="display: flex;justify-content: center;">
+        <button type="button" class="btn btn-primary btn-lg" onclick="return submitData()">Move To Folder <span id="dynamicFolder"></span>&nbsp;&nbsp;<i class="fas fa-folder-open"></i>
+        </button>
       </div>
     </div>
   </div>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js " integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo " crossorigin="anonymous "></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js " integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ " crossorigin="anonymous "></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js " integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm " crossorigin="anonymous "></script>
 </body>
 
 </html>

@@ -30,7 +30,7 @@ h1 {
   font-family: 'Roboto', sans-serif;
 }
 
-#fileIdentifier {
+.fileIdentifier {
   width: 80%;
   margin-bottom: 0.5em;
   margin-left: 10%;
@@ -143,9 +143,10 @@ a {
 
 .menuTab {
   position: absolute;
-  right: 4px;
-  top: 4px;
+  right: 8px;
+  top: 1em;
   color: white;
+  margin-right: 1em;
 }
 
 .nav-link:hover {
@@ -270,5 +271,3 @@ a {
   opacity: 1;
   transition: all 0.4s linear;
 }
-
-/***Wedges***/

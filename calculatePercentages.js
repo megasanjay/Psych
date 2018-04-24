@@ -13,6 +13,11 @@ function checkPrivilege() {
     window.open("Login.html", "_self", false); // Goes back to the login page
   }
 
+  if (sessionStorage.getItem("calculatePercentageTimerStatus") == "timerComplete" || sessionStorage.getItem("calculatePercentageTimerStatus") == undefined) {
+    sessionStorage.setItem("calculatePercentageTimer", Date.now());
+    sessionStorage.setItem("calculatePercentageTimerStatus", "timerStarted");
+  }
+
   if (sessionStorage.getItem("day") == 1) {
     setInterval(checkForRefresh, 2000);
   }
@@ -37,7 +42,14 @@ function checkForRefresh() {
                 if (xhttpRequest.status === 200) {
                   var response = xhttpRequest.responseText;
                   if (response == "confirmed") {
-                    console.log("confirmed");
+                    sessionStorage.setItem("reloadConfirmed", true);
+                    sessionStorage.setItem("financialTimerStatus", "timerComplete");
+                    sessionStorage.setItem("memoTimerStatus", "timerComplete");
+                    sessionStorage.setItem("crossCheckTimerStatus", "timerComplete");
+                    sessionStorage.setItem("sortFilesTimerStatus", "timerComplete");
+                    sessionStorage.setItem("calculatePercentageTimerStatus", "timerComplete");
+                    sessionStorage.setItem("labelApptTimerStatus", "timerComplete");
+                    window.open("TestingHomepage.html", "_self", false);
                     window.open("TestingHomepage.html", "_self", false);
                   }
                 }
@@ -172,6 +184,8 @@ function checkForCompletion() {
   }
 
   if (parseInt(rowCount) >= parseInt(goal)) {
+    submitGoalTime();
+
     sessionStorage.setItem("percentageGoal", parseInt(goal) + parseInt(tempGoal));
     sessionStorage.setItem("currentStatus", "goalMet");
 
@@ -208,6 +222,21 @@ function checkForCompletion() {
     }
     window.open("TestingHomepage.html", "_self", false);
   }
+}
+
+function submitGoalTime() {
+  if (sessionStorage.getItem("calculatePercentageTimerStatus") == "timerStarted") {
+    var seconds = (Date.now() - sessionStorage.getItem("calculatePercentageTimer")) / 1000;
+    var goal = tempGoal;
+    sessionStorage.setItem("calculatePercentageTimerStatus", "timerComplete");
+
+    var requestURL = "http://localhost:8888/PsychPHP/goals.php";
+    httpRequest = new XMLHttpRequest();
+    httpRequest.open('POST', requestURL);
+    httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    httpRequest.send('userName=' + encodeURIComponent(user) + '&time=' + encodeURIComponent(seconds) + '&type=' + encodeURIComponent("calculatePercentages") + '&goal=' + encodeURIComponent(goal));
+  }
+  return;
 }
 
 function loadGrid(response) {

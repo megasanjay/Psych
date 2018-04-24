@@ -5,6 +5,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Label Appointments </title>
+  <link rel="icon" type="image/png" sizes="32x32" href="http://csci130.xyz/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="http://csci130.xyz/favicon-16x16.png">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="labelAppointment.css">
   <script type="text/javascript" src="labelAppointment.js"></script>
@@ -47,46 +51,53 @@
       </div>
     </div>
   </div>
-
   <div class="inputForm">
     <div class="inputFieldset">
-      <div>
-        <label>Patient ID:</label> <input type="label" placeholder="Patient Identification Number" readonly id="idLabel">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-default">Patient ID</span>
+        </div>
+        <input id="idLabel" type="text" class="form-control" aria-label="Default" readonly aria-describedby="inputGroup-sizing-default">
       </div>
-      <br>
-      <div>
-        <label>First Name:</label> <input type="label" placeholder="First Name" readonly id="firstNameLabel">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-default">First Name</span>
+        </div>
+        <input id="firstNameLabel" type="text" class="form-control" aria-label="Default" readonly aria-describedby="inputGroup-sizing-default">
       </div>
-      <br>
-      <div>
-        <label>Last Name: </label><input type="label" placeholder="Last Name" readonly id="lastNameLabel">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-default">Last Name</span>
+        </div>
+        <input id="lastNameLabel" type="text" class="form-control" aria-label="Default" readonly aria-describedby="inputGroup-sizing-default">
       </div>
-      <br>
-      <div>
-        <label>Appointment #:</label> <input type="label" readonly placeholder="Appointment Number" id="apptNumLabel">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-default">Appointment Number</span>
+        </div>
+        <input id="apptNumLabel" type="text" class="form-control" aria-label="Default" readonly aria-describedby="inputGroup-sizing-default">
       </div>
-      <br>
-      <div>
-        <label>Appointment Type:</label> <select id="labelValue">
-        <option disabled selected value="ns"> 
-          -- select an option -- 
-        </option>
-        <option value="initial">
-          Initial Appointment
-        </option>
-        <option value = "followUp">
-          Follow Up Appointment
-        </option>
-      </select>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="labelValue">Appointment Type</label>
+        </div>
+        <select class="custom-select" id="labelValue">
+          <option disabled selected value="ns">Choose...</option>
+          <option value="initial">Initial Appointment</option>
+          <option value = "followUp">Follow Up Appointment</option>
+        </select>
       </div>
-      <br>
-      <div>
-        <button onclick="moveAppointment('prev')" class="createButton buttonPrev"><span> << Previous</span></button>
-        <button onclick="submitData();" class="submitButton"><span>Submit</span></button  >
-        <button onclick="moveAppointment('next')" class="createButton"><span>Next >> </span></button>
+      <div class="btncontainer">
+        <button type="button" class="btn btn-secondary hvr-glow" onclick="moveAppointment('prev')"><i class="fas fa-angle-double-left"></i> Previous</button>
+        <button type="button" class="btn btn-primary hvr-glow" onclick="submitData();">Submit  <i class="fas fa-arrow-alt-circle-up"></i></button>
+        <button type="button" class="btn btn-secondary hvr-glow" onclick="moveAppointment('next')">Next  <i class="fas fa-angle-double-right"></i></button>
       </div>
     </div>
   </div>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 </body>
 
 </html>

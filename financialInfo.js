@@ -43,7 +43,13 @@ function checkForRefresh() {
                 if (xhttpRequest.status === 200) {
                   var response = xhttpRequest.responseText;
                   if (response == "confirmed") {
-                    console.log("confirmed");
+                    sessionStorage.setItem("reloadConfirmed", true);
+                    sessionStorage.setItem("financialTimerStatus", "timerComplete");
+                    sessionStorage.setItem("memoTimerStatus", "timerComplete");
+                    sessionStorage.setItem("crossCheckTimerStatus", "timerComplete");
+                    sessionStorage.setItem("sortFilesTimerStatus", "timerComplete");
+                    sessionStorage.setItem("calculatePercentageTimerStatus", "timerComplete");
+                    sessionStorage.setItem("labelApptTimerStatus", "timerComplete");
                     window.open("TestingHomepage.html", "_self", false);
                   }
                 }
@@ -243,13 +249,14 @@ function submitGoalTime() {
     var seconds = (Date.now() - sessionStorage.getItem("financialTimer")) / 1000;
     var goal = tempGoal;
     sessionStorage.setItem("financialTimerStatus", "timerComplete");
-  }
 
-  var requestURL = "http://localhost:8888/PsychPHP/goals.php";
-  httpRequest = new XMLHttpRequest();
-  httpRequest.open('POST', requestURL);
-  httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  httpRequest.send('userName' + encodeURIComponent(user) + '&time=' + encodeURIComponent(seconds) + '&type=' + encodeURIComponent("financial") + '&goal=' + encodeURIComponent(goal));
+    var requestURL = "http://localhost:8888/PsychPHP/goals.php";
+    httpRequest = new XMLHttpRequest();
+    httpRequest.open('POST', requestURL);
+    httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    httpRequest.send('userName=' + encodeURIComponent(user) + '&time=' + encodeURIComponent(seconds) + '&type=' + encodeURIComponent("financial") + '&goal=' + encodeURIComponent(goal));
+  }
+  return;
 }
 
 function runSaveAnimation() {

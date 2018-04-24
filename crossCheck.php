@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('America/Los_Angeles');
 
 $servername = 'localhost'; // default server name
 $username = 'psychUser'; // user name that you created
@@ -46,27 +47,31 @@ if (!empty($_POST))
     
     if ($result->num_rows != 0)     // Results returned
     {
-      $stmt = $conn->prepare("UPDATE crosscheck SET recordDate = ?, patientName = ?, patientAge = ?, patientHeight = ?, patientWeight = ? WHERE username = ? AND recordnum = ?");
+      $timestamp = date("Y-m-d H:i:s");
+      $stmt = $conn->prepare("UPDATE crosscheck SET recordDate = ?, patientName = ?, patientAge = ?, patientHeight = ?, patientWeight = ?, timestamp = ? WHERE username = ? AND recordnum = ?");
       
       if ($stmt==FALSE)
       {
       	echo "There is a problem with prepare <br>";
-      	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+      	echo $conn->error; 
+        return;
       }
-      $stmt->bind_param("ssiddsi", $recordDate, $patientName, $patientAge, $patientHeight, $patientWeight, $tblUsername, $id);
+      $stmt->bind_param("ssiddssi", $recordDate, $patientName, $patientAge, $patientHeight, $patientWeight, $timestamp, $tblUsername, $id);
       $stmt->execute(); // Run query
       
     }
     else
     {
-      $stmt = $conn->prepare("INSERT INTO crosscheck (recordnum, username, recordDate, patientName, patientAge, patientHeight, patientWeight) VALUES (?, ?, ?, ?, ?, ?, ?)");
+      $timestamp = date("Y-m-d H:i:s");
+      $stmt = $conn->prepare("INSERT INTO crosscheck (recordnum, username, recordDate, patientName, patientAge, patientHeight, patientWeight, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
       
       if ($stmt==FALSE)
       {
       	echo "There is a problem with prepare <br>";
-      	echo $conn->error; // Need to connect/reconnect before the prepare call otherwise it doesnt work
+      	echo $conn->error;
+        return;
       }
-      $stmt->bind_param("isssidd", $id, $tblUsername, $recordDate, $patientName, $patientAge, $patientHeight, $patientWeight);
+      $stmt->bind_param("isssidds", $id, $tblUsername, $recordDate, $patientName, $patientAge, $patientHeight, $patientWeight, $timestamp);
       $stmt->execute(); // Run query
     }
   }

@@ -5,6 +5,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>Admin Page</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="http://csci130.xyz/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="http://csci130.xyz/favicon-16x16.png">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
   <script src="https://docs.handsontable.com/pro/bower_components/handsontable-pro/dist/handsontable.full.min.js"></script>
   <link rel="stylesheet" type="text/css" href="https://docs.handsontable.com/pro/bower_components/handsontable-pro/dist/handsontable.full.min.css">
   <link rel="stylesheet" type="text/css" href="https://handsontable.com/static/css/main.css">
@@ -14,11 +17,18 @@
   <script type="text/javascript" src="AdminPage.js"></script>
 </head>
 
-<body onload="checkPrivilege()">
+<body onload="checkPrivilege(); document.getElementById('login-tab').click();">
   <div class="topContainer">
     <h1>
       Admin Homepage
     </h1>
+  </div>
+  <div class="menuTab">
+    <ul class="nav justify-content-end">
+      <li class="nav-item">
+        <a class="nav-link" onclick="if (confirm('Do you want to log out?')){window.open('Login.html', '_self', false);}">Logout</a>
+      </li>
+    </ul>
   </div>
   <div id="refreshing" class="hidden">
     <div class="lds-css ng-scope">
@@ -41,72 +51,73 @@
       </div>
     </div>
   </div>
-  <div id="buttonContainer">
-    <div class="adminOptions">
-      <label class="switchLabel">Show Participants:</label>
-      <label class="switch">
-      <input id = "particpantsCheckBox" type="checkbox" onchange="showParticipants()" checked = "true">
-      <span class="slider round"></span>
-    </label>
-    </div>
-    <div class="adminOptions">
-      <label class="switchLabel">Show Live Feed:</label>
-      <label class="switch">
-      <input id = "liveFeedCheckBox" type="checkbox" onchange="showLiveFeed()" checked = "true">
-      <span class="slider round"></span>
-    </label>
-    </div>
-    <div class="adminOptions">
-      <label class="switchLabel">Show Restrictions:</label>
-      <label class="switch">
-      <input id = "restrictionsCheckBox" type="checkbox" onchange="showRestrictions()" checked = "true">
-      <span class="slider round"></span>
-    </label>
-    </div>
-    <div class="adminOptions">
-      <label class="switchLabel">Show Login Info:</label>
-      <label class="switch">
-      <input id = "loginCheckBox" type="checkbox" onchange="showLogin()" checked = "true">
-      <span class="slider round"></span>
-    </label>
-    </div>
-    <div class="adminOptions">
-      <label class="switchLabel">Show Goals Info:</label>
-      <label class="switch">
-      <input id = "goalsCheckBox" type="checkbox" onchange="showGoals()" checked = "true">
-      <span class="slider round"></span>
-    </label>
-    </div>
-    <div class="adminOptions">
-      <label class="switchLabel">Auto-Refresh:</label>
-      <label class="switch">
-      <input id = "autoRefreshCheckBox" type="checkbox" onchange="autoRefresh()" checked = "true">
-      <span class="slider round"></span>
-    </label>
-    </div>
-    <div class="adminOptions refresh"><label class="switchLabel refresh" onclick="forceRefresh()">Refresh User's Screen</label></div>
-  </div>
   <div id="participantsContainer">
     <ul id="participantsList"></ul>
   </div>
+  <ul class="nav nav-tabs" id="myTab" role="tablist" style="border-bottom: 1px white solid; margin-left: 20px;">
+    <li class="nav-item">
+      <a class="nav-link" id="login-tab" data-toggle="tab" href="#loginInfo" onclick="showPane('loginInfo')" role="tab" aria-controls="contact" aria-selected="false">Logins and Restrictions</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" id="home-tab" data-toggle="tab" href="#liveFeed" onclick="showPane('liveFeed')" role="tab" aria-controls="home" aria-selected="true">Live Feed</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="profile-tab" data-toggle="tab" href="#goals" onclick="showPane('goals')" role="tab" aria-controls="profile" aria-selected="false">Goals</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="refresh-tab" data-toggle="tab" href="#refreshPage" onclick="showPane('refreshPage')" role="tab" aria-controls="contact" aria-selected="false">Refresh User's Page</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <div class="container-fluid">
+      <div class="tab-pane fade show active" id="liveFeed" role="tabpanel" aria-labelledby="home-tab" style="background-color: transparent;">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="autoRefreshCheckBox" onchange="autoRefresh()" checked="true">
+          <label class="form-check-label" for="defaultCheck1">Auto-Refresh</label>
+        </div>
+        <div id="mainContainer" class="tableGridContainer liveFeedContainer">
+          <div id="gridContainer" class="tableContainer">
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="container-fluid">
+      <div class="tab-pane fade" id="goals" role="tabpanel" aria-labelledby="profile-tab" style="background-color: transparent">
+        <div id="mainContainer4" class="tableGridContainer">
+          <div id="gridContainer4" class="tableContainer">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="tab-pane fade" id="loginInfo" role="tabpanel" aria-labelledby="contact-tab" style="background-color: transparent">
+        <div id="mainContainer2" class="tableGridContainer">
+          <div id="gridContainer2" class="tableContainer">
+          </div>
+        </div>
+        <br>
+        <div id="mainContainer3" class="tableGridContainer">
+          <div id="gridContainer3" class="tableContainer">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+      <div class="tab-pane fade" id="refreshPage" role="tabpanel" aria-labelledby="contact-tab" style="background-color: transparent">
+        <button class="btn btn-danger" onclick="forceRefresh('request')">Refresh User's Screen</button>
+        <br> <br>
+        <button class="btn btn-danger" onclick="forceRefresh('cancel')">Cancel Refresh</button>
+      </div>
+    </div>
+  </div>
+  <div id="buttonContainer" style="visibility: hidden;">
+    <button class="adminOptions rrefreshDiv"><label class="switchLabel rrefresh" onclick="forceRefresh()">Refresh User's Screen</label></button>
+  </div>
   <br>
-  <div id="participantFeed"></div>
-  <div id="mainContainer" class="tableGridContainer">
-    <div id="gridContainer" class="tableContainer">
-    </div>
-  </div>
-  <div id="mainContainer2" class="tableGridContainer">
-    <div id="gridContainer2" class="tableContainer">
-    </div>
-  </div>
-  <div id="mainContainer3" class="tableGridContainer">
-    <div id="gridContainer3" class="tableContainer">
-    </div>
-  </div>
-  <div id="mainContainer4" class="tableGridContainer">
-    <div id="gridContainer4" class="tableContainer">
-    </div>
-  </div>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 </body>
 
 </html>
