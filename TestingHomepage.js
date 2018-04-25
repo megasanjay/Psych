@@ -1,13 +1,16 @@
 var user;
 var taskNumber;
 
+window.onload = function () {
+  checkPrivilege();
+}
+
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
 
-  // Checks if user is logged in
   if (user == undefined) {
     alert("Please log into your account.");
-    window.open("Login.html", "_self", false); // Goes back to the login page
+    window.open("Login.html", "_self", false);
   }
 
   var loadState = sessionStorage.getItem("loadState");
@@ -16,20 +19,27 @@ function checkPrivilege() {
     sessionStorage.setItem("limitors", "[]");
     sessionStorage.setItem("choices", "[]");
     checkRestrictions();
-    return;
+  } else {
+    synchFunction(loadState);
   }
+}
 
+function synchFunction(loadState) {
   styleButtons(loadState);
 
   if (sessionStorage.getItem("day") == 1) {
-    if (sessionStorage.getItem("reloadConfirmed") == true || sessionStorage.getItem("reloadConfirmed") == undefined) {
-      sessionStorage.setItemItem("reloadConfirmed", false);
-      showChoice();
+    if (sessionStorage.getItem("reloadConfirmed") == undefined) {
+      sessionStorage.setItem("reloadConfirmed", false);
+      showChoice("reload");
+    } else if (sessionStorage.getItem("reloadConfirmed") == true) {
+      sessionStorage.setItem("reloadConfirmed", false);
+      showChoice("reload");
+    } else {
+      showChoice("noReload");
     }
   } else {
     showButtons();
   }
-
 }
 
 function styleButtons(loadState) {
@@ -200,8 +210,7 @@ function alertGetGoal() {
       }
     }
     return 1;
-  } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
-  {
+  } catch (e) {
     alert('Caught Exception: ' + e.description);
   }
 }
@@ -277,12 +286,14 @@ function dayOneGoals() {
     }
   }
 
-  showChoice();
+  showChoice("reload");
 }
 
-function showChoice() {
+function showChoice(input) {
   var choicesArray = sessionStorage.getItem("choices");
   choicesArray = JSON.parse(choicesArray);
+
+  var firstElement, secondElement;
 
   if (choicesArray.length == 0) {
     var elements = document.getElementsByClassName("shadow");
@@ -294,10 +305,14 @@ function showChoice() {
 
   var randElement = Math.floor(Math.random() * choicesArray.length);
 
-  var firstElement = choicesArray[randElement].first;
-  var secondElement = choicesArray[randElement].second;
-
-  console.log(firstElement);
+  if (input == "reload") {
+    firstElement = choicesArray[randElement].first;
+    secondElement = choicesArray[randElement].second;
+    choicesArray.splice(randElement, 1);
+  } else {
+    firstElement = JSON.parse(sessionStorage.getItem("lastChoice")).first;
+    secondElement = JSON.parse(sessionStorage.getItem("lastChoice")).second;
+  }
 
   var elements = document.getElementsByClassName("shadow");
   for (let i = 0; i < elements.length; i++) {
@@ -307,10 +322,14 @@ function showChoice() {
   document.getElementById(firstElement).style.display = "block";
   document.getElementById(secondElement).style.display = "block";
 
-  choicesArray.splice(randElement, 1);
-
   choicesArray = JSON.stringify(choicesArray);
   sessionStorage.setItem("choices", choicesArray);
+
+  temp = new Object();
+  temp.first = firstElement;
+  temp.second = secondElement;
+  temp = JSON.stringify(temp);
+  sessionStorage.setItem("lastChoice", temp);
   return;
 }
 
@@ -437,13 +456,13 @@ function imposeRestrictions() {
           response = JSON.parse(response);
           restrictControls(response);
         }
+        synchFunction(sessionStorage.getItem("loadState"));
       } else {
         alert('There was a problem with the request.');
       }
     }
     return 1;
-  } catch (e) // Always deal with what can happen badly, client-server applications --> there is always something that can go wrong on one end of the connection
-  {
+  } catch (e) {
     alert('Caught Exception: imposeRestrictions -' + e.description);
   }
 }

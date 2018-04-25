@@ -2,6 +2,7 @@ var hot, hotter, hottest, tooHot, hooks;
 var currentInterval = [];
 var user;
 var columnHeaders;
+var columnWidths;
 
 function checkPrivilege() {
   user = sessionStorage.getItem("currentUser");
@@ -288,6 +289,7 @@ function viewLiveFeed(username, tasknum) {
 function loadFinancialInfoTable(username) {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
   columnHeaders = ['Date', 'Check Number', 'Amount', 'Timestamp'];
+  columnWidths = undefined;
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -299,6 +301,7 @@ function loadFinancialInfoTable(username) {
 function loadSortedFiles(username) {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'></div>";
   columnHeaders = ['File Name', 'Folder Selected', 'Timestamp'];
+  columnWidths = undefined;
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -310,6 +313,7 @@ function loadSortedFiles(username) {
 function loadMemo(username) {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer'></div>";
   columnHeaders = ['Memo Text', 'Timestamp'];
+  columnWidths = [500, 200];
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -321,6 +325,7 @@ function loadMemo(username) {
 function loadLabelingApointments(username) {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
   columnHeaders = ['First Name', 'Last Name', 'Appointmnet Number', 'Selected Option', 'Timestamp'];
+  columnWidths = undefined;
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -332,6 +337,7 @@ function loadLabelingApointments(username) {
 function loadCrossCheckInfoTable(username) {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
   columnHeaders = ['Date', 'Patient Name', 'Patient Age', 'Patient Height', 'Patient Weight', 'Timestamp'];
+  columnWidths = undefined;
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -343,6 +349,7 @@ function loadCrossCheckInfoTable(username) {
 function loadPercentages(username) {
   document.getElementById("mainContainer").innerHTML = "<div id='gridContainer' ></div>";
   columnHeaders = ['Appts Attended', 'Appts Late', 'Appts Missed', '% Attended', '% Late', 'Timestamp'];
+  columnWidths = undefined;
   var requestURL = "http://localhost:8888/PsychPHP/AdminDetails.php";
   httpRequest = new XMLHttpRequest();
   httpRequest.onreadystatechange = loadTable;
@@ -386,6 +393,7 @@ function loadGrid(response) {
     columnSorting: true,
     readOnly: true,
     colHeaders: columnHeaders,
+    colWidths: columnWidths,
     contextMenu: true,
     fillHandle: {
       autoInsertRow: false,
